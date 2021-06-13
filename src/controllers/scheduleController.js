@@ -1,5 +1,5 @@
 
-const scheduleHelper = require('./helpers/scheduleHelper.js');
+const scheduleHelper = require('../server/school');
 
 class ScheduleController {
 
@@ -14,11 +14,7 @@ class ScheduleController {
 
         try {
             
-            let html = await scheduleHelper.scrapeSchedule(mssv, pass);
-    
-            let subjectList = scheduleHelper.parseSchedule(html) || 'Failed';
-            
-            process.env.SCHEDULE = JSON.stringify(subjectList);
+            let subjectList = await scheduleHelper.getSchedule(mssv, pass);
             
             return res.json(subjectList);
     
