@@ -1,9 +1,9 @@
 
 const request = require('request');
 
-const scheduleHelper = require('./helpers/scheduleHelper');
-const webhookHelper = require('./helpers/webhookHelper');
+const scheduleHelper = require('../server/school');
 
+const dateConst = require('../constants/dateConst.js');
 
 class WebhookController {
 
@@ -53,6 +53,7 @@ class WebhookController {
     
                 // Check if the event is a message 
                 if (webhook_event.message) {
+
                     handleMessage(sender_psid, webhook_event.message);        
                 }
     
@@ -70,66 +71,69 @@ class WebhookController {
 }
 
 // Handles messages events
-async function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message, self=false) {
     let message = received_message.text;
-    let response = { "text": `Invalid message: "${message}"` }; // default failed response
+    let response = self ? { "text": message } : {  // default response
+        "text": message == undefined ? `Bạn vừa nhấn nút like` : `Bạn vừa gửi: "${message}"` 
+    };
 
     // Check if the message contains text
     if (message) {
         let mssv = (sender_psid == process.env.PSID) ? process.env.MSSV : process.env.GUEST_MSSV;
         let pass = (sender_psid == process.env.PSID) ? process.env.PASS : process.env.GUEST_PASS;
 
-        if ( equalsIn(message, 'hello') || equalsIn(message, 'chào') || 
-        equalsIn(message, 'hi') || equalsIn(message, 'test') ) {
-            response = { 
-                "text": `You sent the message: "${received_message.text}"`,
-            }
+        if (message.toLowerCase().includes('login ')) {
+            response = { "text": `Đã ghi nhận thông tin của bạn.\nNhớ xoá tin nhắn để bảo vệ tài khoản nhé!`,}
 
-        } else if (message.includes('ssv: ')) {
-            response = { 
-                "text": `Config MSSV`,
-            }
+            process.env.GUEST_MSSV = message.slice(6, 6 + 8);
+            process.env.GUEST_PASS = message.slice(6 + 8 + 1, message.length);
 
-            process.env.GUEST_MSSV = message.slice(6);
-
-        } else if (message.includes('ass: ')) {
-            response = { 
-                "text": `Config password`,
-            }
-
-            process.env.GUEST_PASS = message.slice(6);
-
-        } else if (equalsIn(message, 'tkb')) {
+        } else if (equalsIn(message, 'week')) { // get current week
             
-            if (!mssv || !pass) {
+            if (mssv && pass) {
 
-                response = { "text": `INVALID USER`, }
+                await checkSchedule(mssv, pass, sender_psid);
+    
+                response = { "text": toMessage(process.env.SCHEDULE) }
 
-            } else {
+            }
 
-                if (!process.env.SCHEDULE) {
-                    try {
-    
-                        let html = await scheduleHelper.scrapeSchedule(mssv, pass);
-        
-                        let subjectList = scheduleHelper.parseSchedule(html) || 'Failed';
-                        
-                        process.env.SCHEDULE = JSON.stringify(subjectList);
-    
-                    } catch (err) {
-                        console.error(err);
-                    }
-                }
-    
-                response = { 
-                    "text": webhookHelper.formatSchedule(process.env.SCHEDULE).join('\n\n'),
-                }
+        } else if (equalsIn(message, 'today')) { // get today
+            if (mssv && pass) {
+
+                await checkSchedule(mssv, pass, sender_psid);
+
+                const date = new Date().getDate();
+                const schedule = JSON.parse(process.env.SCHEDULE);
+                const todaySchedule = schedule.filter(ele => ele.date.includes(date));
+
+                response = { "text": toMessage(todaySchedule) }
+
+            }
+            
+        } else if (dateConst[message.toLowerCase()]) { // get weekday
+            if (mssv && pass) {
+
+                await checkSchedule(mssv, pass, sender_psid);
+
+                const schedule = JSON.parse(process.env.SCHEDULE);
+                const dateSchedule = schedule.filter(ele => ele.date.includes(dateConst[message.toLowerCase()]));
+
+                response = { "text": toMessage(dateSchedule) }
+
+            }
+        } else if (equalsIn(message, 'update')) {
+            if (mssv && pass) {
+
+                await getSchedule(mssv, pass, sender_psid);
+
+                response = { "text": toMessage(process.env.SCHEDULE) }
 
             }
         }
 
-        console.log(`receive: ${message}`);
-        console.log(`reply: ${response.text}`);
+        console.log(`receive: '${message}'`);
+        console.log(`reply: '${response.text}'`);
     }  
     
     // Sends the response message
@@ -143,15 +147,12 @@ function equalsIn(a, b) {
         : a === b;
 }
 
-
 // Sends response messages via the Send API
 function callSendAPI(sender_psid, response) {
     
     // Construct the message body
     let request_body = {
-        "recipient": {
-        "id": sender_psid
-        },
+        "recipient": { "id": sender_psid },
         "message": response,
     }
 
@@ -164,11 +165,61 @@ function callSendAPI(sender_psid, response) {
     }, (err, res, body) => {
 
         if (!err) {
-            console.log('message sent!')
+            console.log('message sent!');
         } else {
             console.error("Unable to send message:" + err);
         }
     });
+}
+
+// Check if schedule has been loaded
+async function checkSchedule(mssv, pass, sender_psid) {
+    if (!process.env.SCHEDULE) {
+
+        try {
+
+            await getSchedule(mssv, pass, sender_psid)
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+}
+
+// get schedule
+async function getSchedule(mssv, pass, sender_psid) {
+
+    handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB nhé!' }, true);
+
+    try {
+
+        let subjectList = await scheduleHelper.getSchedule(mssv, pass);
+        
+        process.env.SCHEDULE = JSON.stringify(subjectList);
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// Format schedule to readable message
+function toMessage(schedule) {
+    if (schedule.length == 0)
+        return 'Không tìm thấy lịch học';
+
+    if (typeof schedule === 'string')
+        schedule = JSON.parse(schedule);
+
+    let readableSchedule = schedule.map((ele) => {
+        return `===== ${ele.date} =====\n` +
+            (ele.note === '' ? `` : `-----> ${ele.note}\n`) + 
+            `Môn: ${ele.subject}\n`+
+            `Tiết: ${ele.period}\n`+
+            `Nhóm: ${ele.group}` + (ele.subGroup == 0 ? `` : ` - Tổ: ${ele.subGroup}`) + `\n`+
+            `Phòng: ${ele.room}\n`
+    });
+
+    return readableSchedule.join('\n');
 }
 
 module.exports = new WebhookController()
