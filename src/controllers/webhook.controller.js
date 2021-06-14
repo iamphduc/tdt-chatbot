@@ -3,7 +3,7 @@ const request = require('request');
 
 const scheduleHelper = require('../server/school');
 
-const dateConst = require('../constants/dateConst.js');
+const dateConst = require('../constants/weekday.const.js');
 
 class WebhookController {
 
@@ -71,25 +71,23 @@ class WebhookController {
 }
 
 // Handles messages events
-async function handleMessage(sender_psid, received_message, self=false) {
+async function handleMessage(sender_psid, received_message, reply=false) {
     let message = received_message.text;
-    let response = self ? { "text": message } : {  // default response
+    let response = reply ? { "text": message } : {  // default response
         "text": message == undefined ? `Bạn vừa nhấn nút like` : `Bạn vừa gửi: "${message}"` 
     };
 
     // Check if the message contains text
     if (message) {
-        let mssv = (sender_psid == process.env.PSID) ? process.env.MSSV : process.env.GUEST_MSSV;
-        let pass = (sender_psid == process.env.PSID) ? process.env.PASS : process.env.GUEST_PASS;
+        let { mssv, pass } = JSON.parse(process.env[sender_psid]);
 
         if (message.toLowerCase().includes('login ')) {
             response = { "text": `Đã ghi nhận thông tin của bạn.\nNhớ xoá tin nhắn để bảo vệ tài khoản nhé!`,}
 
-            process.env.GUEST_MSSV = message.slice(6, 6 + 8);
-            process.env.GUEST_PASS = message.slice(6 + 8 + 1, message.length);
+            process.env[sender_psid] = message.slice(6, 6 + 8);
+            process.env[sender_psid] = message.slice(6 + 8 + 1, message.length);
 
         } else if (equalsIn(message, 'week')) { // get current week
-            
             if (mssv && pass) {
 
                 await checkSchedule(mssv, pass, sender_psid);
@@ -121,13 +119,23 @@ async function handleMessage(sender_psid, received_message, self=false) {
 
                 response = { "text": toMessage(dateSchedule) }
 
-            }
+            }            
+
         } else if (equalsIn(message, 'update')) {
             if (mssv && pass) {
 
                 await getSchedule(mssv, pass, sender_psid);
 
                 response = { "text": toMessage(process.env.SCHEDULE) }
+
+            }
+
+        } else if (equalsIn(message, 'next')) {
+            if (mssv && pass) {
+
+                await checkNextSchedule(mssv, pass, sender_psid);
+    
+                response = { "text": toMessage(process.env.NEXT) }
 
             }
         }
@@ -178,7 +186,21 @@ async function checkSchedule(mssv, pass, sender_psid) {
 
         try {
 
-            await getSchedule(mssv, pass, sender_psid)
+            await getSchedule(mssv, pass, sender_psid);
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+}
+
+// Check if next week schedule has been loaded
+async function checkNextSchedule(mssv, pass, sender_psid) {
+    if (!process.env.NEXT) {
+
+        try {
+
+            await getSchedule(mssv, pass, sender_psid, true);
 
         } catch (err) {
             console.error(err);
@@ -187,15 +209,19 @@ async function checkSchedule(mssv, pass, sender_psid) {
 }
 
 // get schedule
-async function getSchedule(mssv, pass, sender_psid) {
+async function getSchedule(mssv, pass, sender_psid, next=false) {
 
     handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB nhé!' }, true);
 
     try {
 
-        let subjectList = await scheduleHelper.getSchedule(mssv, pass);
+        let subjectList = await scheduleHelper.getSchedule(mssv, pass, next);
         
-        process.env.SCHEDULE = JSON.stringify(subjectList);
+        if (next) {
+            process.env.NEXT = JSON.stringify(subjectList);
+        } else {
+            process.env.SCHEDULE = JSON.stringify(subjectList);
+        }
 
     } catch (err) {
         console.error(err);

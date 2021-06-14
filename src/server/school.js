@@ -2,8 +2,7 @@
 var rp = require('request-promise');
 const cheerio = require('cheerio');
 
-const { __EVENTTARGET, __EVENTARGUMENT, __LASTFOCUS, __VIEWSTATE, __VIEWSTATEGENERATOR } = require('../constants/selectConst');
-
+const currSemester = '109';
 
 class School {
 
@@ -16,10 +15,11 @@ class School {
         })
     }
 
-    async getSchedule(mssv, pass) {
+    async getSchedule(mssv, pass, next=false) {
         try {
 
             await this.login(mssv, pass);
+
     
             // ===== SCHEDULE ===== //
     
@@ -33,22 +33,24 @@ class School {
             });
     
             console.timeEnd("Schedule");
-    
+
     
             // ===== CHANGE SCHEDULE ===== //
     
             console.time("Change schedule");
+
+            const $schedule = cheerio.load(schedule.body);
     
             await rp({
                 method: 'POST',
                 uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx' + schedule.request.uri.search,
                 formData: {
-                    __EVENTTARGET,
-                    __EVENTARGUMENT,
-                    __LASTFOCUS,
-                    __VIEWSTATE,
-                    __VIEWSTATEGENERATOR,
-                    'ThoiKhoaBieu1$cboHocKy': '109',
+                    __EVENTTARGET: $schedule('#__EVENTTARGET').val(),
+                    __EVENTARGUMENT: $schedule('#__EVENTARGUMENT').val(),
+                    __LASTFOCUS: $schedule('#__LASTFOCUS').val(),
+                    __VIEWSTATE: $schedule('#__VIEWSTATE').val(),
+                    __VIEWSTATEGENERATOR: $schedule('#__VIEWSTATEGENERATOR').val(),
+                    'ThoiKhoaBieu1$cboHocKy': currSemester == 0 ? $schedule('#ThoiKhoaBieu1_cboHocKy').find(':selected').val() : currSemester,
                     'ThoiKhoaBieu1$radChonLua': 'radXemTKBTheoTuan',
                 },
                 resolveWithFullResponse: true,
@@ -63,8 +65,9 @@ class School {
     
             console.time("Current schedule");
     
-            const html = await rp({
+            const currentSchedule = await rp({
                 uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
+                resolveWithFullResponse: true,
                 json: true,
                 jar: this.jar,
             });
@@ -72,63 +75,104 @@ class School {
             console.timeEnd("Current schedule");
 
 
-            // ===== CHEERIO ===== //
+            // ===== NEXT SCHEDULE ===== //
 
-            console.time("Cheerio");
+            if (next) {
+                
+                console.time("Next schedule");
 
-            const $ = cheerio.load(html);
-
-            let table = $('#ThoiKhoaBieu1_tbTKBTheoTuan > tbody');
-
-            let subjectList = [];
-
-            table.find('.rowContent').each(function(i, ele) {
-                let start = i+1; // start period
-                let dateIdx = 1;
-
-                $(this).find('.cell').each(function(i, ele) {
-                    dateIdx++;
-
-                    if ( !$(this).attr('rowspan') ) return; // skip td has no subject
-                    
-                    let periodLength = parseInt($(this).attr('rowspan')); // number of period
-
-                    let text = $(this).text();
-
-                    let groupIdx = text.indexOf('Groups');
-                    let subGroupIdx = text.indexOf('Sub-group');
-                    let roomIdx = text.indexOf('Room');
-                    let subjEndIdx = text.indexOf('|');
-                    let noteIdx = text.indexOf('GV ')
-
-                    let date = table.find( '.Headerrow td:nth-child('+ dateIdx +')' ).text();
-
-                    subjectList.push({
-                        'date': ( dateIdx === 8 ? 'CN ' : date.slice(0, 6) ) + date.slice(-7, date.length),
-                        'subject': text.substring(0, subjEndIdx),
-                        'period': Array(periodLength).fill().map((_, i) => i + start).join(','), // python range
-                        'group': text.substring(groupIdx + 8, groupIdx + 10).replace(/[^0-9a-z]/gi, ''),
-                        'subGroup': subGroupIdx === -1 ? "0" : text.substring(subGroupIdx + 11, subGroupIdx + 13).replace(/[^0-9a-z]/gi, ''),
-                        'room': text.substring(roomIdx + 6).replace('GV báo vắng', '').replace(' GV dạy bù', ''),
-                        'note': noteIdx === -1 ? '' : text.substring(noteIdx, text.length),
-                    });
+                const $schedule = cheerio.load(currentSchedule.body);
+        
+                await rp({
+                    method: 'POST',
+                    uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx' + currentSchedule.request.uri.search,
+                    formData: {
+                        __EVENTTARGET: $schedule('#__EVENTTARGET').val(),
+                        __EVENTARGUMENT: $schedule('#__EVENTARGUMENT').val(),
+                        __LASTFOCUS: $schedule('#__LASTFOCUS').val(),
+                        __VIEWSTATE: $schedule('#__VIEWSTATE').val(),
+                        __VIEWSTATEGENERATOR: $schedule('#__VIEWSTATEGENERATOR').val(),
+                        'ThoiKhoaBieu1$cboHocKy': currSemester == 0 ? $schedule('#ThoiKhoaBieu1_cboHocKy').find(':selected').val() : currSemester,
+                        'ThoiKhoaBieu1$radChonLua': 'radXemTKBTheoTuan',
+                        'ThoiKhoaBieu1$btnTuanSau': 'Tuần sau|Following week >>',
+                    },
+                    resolveWithFullResponse: true,
+                    simple: false,
+                    jar: this.jar,
                 });
-            });
+            
+        
+                const nextSchedule = await rp({
+                    uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
+                    json: true,
+                    jar: this.jar,
+                });
+        
+                console.timeEnd("Next schedule");
 
-            // sort by date
-            subjectList.sort(function(a,b) {
-                if (a.date > b.date) return 1;
-                if (a.date < b.date) return -1;
-                return 0;
-            });
+                return this.cheerioSchedule(nextSchedule);
+            }
 
-            console.timeEnd("Cheerio");
-
-            return subjectList;
+            return this.cheerioSchedule(currentSchedule.body);
 
         } catch(err) {
             console.error(err);
         }
+    }
+
+    cheerioSchedule(html) {
+
+        console.time("Cheerio");
+
+        const $ = cheerio.load(html);
+
+        let table = $('#ThoiKhoaBieu1_tbTKBTheoTuan > tbody');
+
+        let subjectList = [];
+
+        table.find('.rowContent').each(function(i, ele) {
+            let start = i+1; // start period
+            let dateIdx = 1;
+
+            $(this).find('.cell').each(function(i, ele) {
+                dateIdx++;
+
+                if ( !$(this).attr('rowspan') ) return; // skip td has no subject
+                
+                let periodLength = parseInt($(this).attr('rowspan')); // number of period
+
+                let text = $(this).text();
+
+                let groupIdx = text.indexOf('Groups');
+                let subGroupIdx = text.indexOf('Sub-group');
+                let roomIdx = text.indexOf('Room');
+                let subjEndIdx = text.indexOf('|');
+                let noteIdx = text.indexOf('GV ')
+
+                let date = table.find( '.Headerrow td:nth-child('+ dateIdx +')' ).text();
+
+                subjectList.push({
+                    'date': ( dateIdx === 8 ? 'CN ' : date.slice(0, 6) ) + date.slice(-7, date.length),
+                    'subject': text.substring(0, subjEndIdx),
+                    'period': Array(periodLength).fill().map((_, i) => i + start).join(','), // python range
+                    'group': text.substring(groupIdx + 8, groupIdx + 10).replace(/[^0-9a-z]/gi, ''),
+                    'subGroup': subGroupIdx === -1 ? "0" : text.substring(subGroupIdx + 11, subGroupIdx + 13).replace(/[^0-9a-z]/gi, ''),
+                    'room': text.substring(roomIdx + 6).replace('GV báo vắng', '').replace(' GV dạy bù', ''),
+                    'note': noteIdx === -1 ? '' : text.substring(noteIdx, text.length),
+                });
+            });
+        });
+
+        // sort by date
+        subjectList.sort(function(a,b) {
+            if (a.date > b.date) return 1;
+            if (a.date < b.date) return -1;
+            return 0;
+        });
+
+        console.timeEnd("Cheerio");
+
+        return subjectList;
     }
 
     async login(mssv, pass) {
