@@ -2,16 +2,19 @@
 var rp = require('request-promise');
 const cheerio = require('cheerio');
 
-const currSemester = '109';
+const { currSemester, scoreSemester } = require('../constants/school.const');
 
 class School {
 
     constructor() {
         this.jar = rp.jar();
+
         rp = rp.defaults({
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36',
-            }
+            },
+            jar: this.jar,
+            
         })
     }
 
@@ -29,7 +32,6 @@ class School {
                 uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
                 resolveWithFullResponse: true,
                 json: true,
-                jar: this.jar,
             });
     
             console.timeEnd("Schedule");
@@ -55,7 +57,6 @@ class School {
                 },
                 resolveWithFullResponse: true,
                 simple: false,
-                jar: this.jar,
             });
         
             console.timeEnd("Change schedule");
@@ -69,51 +70,44 @@ class School {
                 uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
                 resolveWithFullResponse: true,
                 json: true,
-                jar: this.jar,
             });
     
             console.timeEnd("Current schedule");
 
+            if (!next) { return this.cheerioSchedule(currentSchedule.body); }
+
 
             // ===== NEXT SCHEDULE ===== //
 
-            if (next) {
-                
-                console.time("Next schedule");
-
-                const $schedule = cheerio.load(currentSchedule.body);
+            console.time("Next schedule");
+    
+            await rp({
+                method: 'POST',
+                uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx' + currentSchedule.request.uri.search,
+                formData: {
+                    __EVENTTARGET: $schedule('#__EVENTTARGET').val(),
+                    __EVENTARGUMENT: $schedule('#__EVENTARGUMENT').val(),
+                    __LASTFOCUS: $schedule('#__LASTFOCUS').val(),
+                    __VIEWSTATE: $schedule('#__VIEWSTATE').val(),
+                    __VIEWSTATEGENERATOR: $schedule('#__VIEWSTATEGENERATOR').val(),
+                    'ThoiKhoaBieu1$cboHocKy': currSemester == 0 ? $schedule('#ThoiKhoaBieu1_cboHocKy').find(':selected').val() : currSemester,
+                    'ThoiKhoaBieu1$radChonLua': 'radXemTKBTheoTuan',
+                    'ThoiKhoaBieu1$btnTuanSau': 'Tuần sau|Following week >>',
+                },
+                resolveWithFullResponse: true,
+                simple: false,
+            });
         
-                await rp({
-                    method: 'POST',
-                    uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx' + currentSchedule.request.uri.search,
-                    formData: {
-                        __EVENTTARGET: $schedule('#__EVENTTARGET').val(),
-                        __EVENTARGUMENT: $schedule('#__EVENTARGUMENT').val(),
-                        __LASTFOCUS: $schedule('#__LASTFOCUS').val(),
-                        __VIEWSTATE: $schedule('#__VIEWSTATE').val(),
-                        __VIEWSTATEGENERATOR: $schedule('#__VIEWSTATEGENERATOR').val(),
-                        'ThoiKhoaBieu1$cboHocKy': currSemester == 0 ? $schedule('#ThoiKhoaBieu1_cboHocKy').find(':selected').val() : currSemester,
-                        'ThoiKhoaBieu1$radChonLua': 'radXemTKBTheoTuan',
-                        'ThoiKhoaBieu1$btnTuanSau': 'Tuần sau|Following week >>',
-                    },
-                    resolveWithFullResponse: true,
-                    simple: false,
-                    jar: this.jar,
-                });
-            
-        
-                const nextSchedule = await rp({
-                    uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
-                    json: true,
-                    jar: this.jar,
-                });
-        
-                console.timeEnd("Next schedule");
+    
+            const nextSchedule = await rp({
+                uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
+                json: true,
+            });
+    
+            console.timeEnd("Next schedule");
 
-                return this.cheerioSchedule(nextSchedule);
-            }
 
-            return this.cheerioSchedule(currentSchedule.body);
+            return this.cheerioSchedule(nextSchedule);
 
         } catch(err) {
             console.error(err);
@@ -122,7 +116,7 @@ class School {
 
     cheerioSchedule(html) {
 
-        console.time("Cheerio");
+        console.time("Cheerio schedule");
 
         const $ = cheerio.load(html);
 
@@ -170,17 +164,137 @@ class School {
             return 0;
         });
 
-        console.timeEnd("Cheerio");
+        console.timeEnd("Cheerio schedule");
 
         return subjectList;
+    }
+
+    async getScore(mssv, pass, semester=scoreSemester[Object.keys(scoreSemester)[0]] , total=false) {
+        try {
+            
+            await this.login(mssv, pass);
+
+
+            // ===== SCORE HOME ===== //
+
+            console.time("Score home");
+    
+            const scoreHome = await rp({
+                uri: 'https://ketquahoctap.tdtu.edu.vn/home/',
+            });
+    
+            console.timeEnd("Score home");
+
+            const $score = cheerio.load(scoreHome);
+
+
+            // ===== SCORE TOTAL ===== //
+            if (total) {
+                
+                console.time("Score total");
+
+                const scoreTotal = await rp({
+                    uri: 'https://ketquahoctap.tdtu.edu.vn/Home/LayDiemTongHop',
+                    qs: {
+                        mssv: $score('#mssv').text(),
+                        namvt: $score('#namvt').text(),
+                        hedaotao: $score('#hedaotao').text(),
+                        time: Date.now(),
+                    },
+                    json: true,
+                });
+        
+                console.timeEnd("Score total");
+
+                return scoreTotal;
+            }
+
+
+            // ===== SCORE ===== //
+
+            console.time("Score");
+
+            const score = await rp({
+                uri: 'https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap',
+                qs: {
+                mssv: $score('#mssv').text(),
+                nametable: semester,
+                hedaotao: $score('#hedaotao').text(),
+                time: Date.now(),
+            },
+                json: true,
+            });
+    
+            console.timeEnd("Score");
+
+            
+
+            // ===== GPA ===== //
+
+            console.time("GPA");
+
+            const scoreGPA = await rp({
+                uri: 'https://ketquahoctap.tdtu.edu.vn/Home/LayDTBHocKy',
+                qs: {
+                    lop: $score('#lop').text(),
+                    mssv: $score('#mssv').text(),
+                    tenBangDiem: semester,
+                    time: Date.now(),
+                },
+                json: true,
+            });
+    
+            console.timeEnd("GPA");
+
+            score.push(scoreGPA);
+
+            return score;
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    cheerioScore(html) {
+
+        const $ = cheerio.load(html);
+
+        let table = $('#dl_kqht > tbody');
+
+        let scoreList = [];
+
+        table.find('tr').each(function() {
+            
+            scoreList.push({
+                no:         getText(this, 1),
+                course:     $(this).find('td:nth-child(2)').clone().children().remove().end().text()
+                            .replace('Những kỹ năng thiết yếu cho sự phát triển bền vững - ', '')
+                            .replace('Công nghệ thông tin', 'CNTT'),
+                code:       getText(this, 3),
+                credit:     getText(this, 4),
+                group:      getText(this, 5),
+                total:      getText(this, 6, true),
+                prog1:      getText(this, 7, true),
+                prog2:      getText(this, 8, true),
+                mid:        getText(this, 9, true),
+                final:      getText(this, 10, true),
+                retest:     getText(this, 11, true),
+                note:       getText(this, 12),
+            });
+
+        });
+
+        function getText(self, nth, strong) {
+            return $(self).find('td:nth-child('+ nth +')' + (strong ? ' strong' : '')).text().replace('()', '')
+        }
+
+        return scoreList;
     }
 
     async login(mssv, pass) {
         try {
             
-            // ===== LOGIN ===== //
-            
-            console.time("\n====================\nLogin");
+            console.time("\n========== REQUEST ==========\nLogin");
     
             const responseLogin = await rp({
                 method: 'POST',
@@ -191,37 +305,78 @@ class School {
                 },
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                    'Accept': '*/*',
                     'Accept-Encoding': 'gzip, deflate, br',
                     'Accept-Language': 'en-US,en;q=0.9',
-                    'Cache-Control': 'max-age=0',
                     'Connection': 'keep-alive',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 },
-                resolveWithFullResponse: true,
                 json: true,
-                jar: this.jar,
             });
-    
-            console.timeEnd("\n====================\nLogin");
-    
+
+            process.env.AUTHTOKEN = responseLogin.url.slice(-8);
+            setAuthCookie(this.jar, process.env.AUTHTOKEN);
             
-            // ===== AUTHENTICATION ===== //
-    
-            console.time("Authentication");
-    
-            await rp({
-                uri: responseLogin.body.url,
-                resolveWithFullResponse: true,
-                simple: false,
-                jar: this.jar,
-            });
-            
-            console.timeEnd("Authentication");
+
+            console.timeEnd("\n========== REQUEST ==========\nLogin");
 
         } catch (err) {
-            console.error(err);
+            
         }
     }
+
+    async getScoreSemester(mssv, pass) {
+        try {
+
+            await this.login(mssv, pass);
+
+
+            // ===== SCORE LANDING ===== //
+
+            console.time("Score home");
+    
+            const scoreHome = await rp({
+                uri: 'https://ketquahoctap.tdtu.edu.vn/home/',
+            });
+    
+            console.timeEnd("Score home");
+
+            const $score = cheerio.load(scoreHome);
+
+
+            // ===== SCORE SEMESTER ===== //
+
+            console.time("Score semester");
+
+            const scoreSemester = await rp({
+                uri: 'https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap',
+                qs: {
+                    mssv: $score('#mssv').text(),
+                    namvt: $score('#namvt').text(),
+                    hedaotao: $score('#hedaotao').text(),
+                    time: Date.now(),
+                },
+                json: true,
+            });
+    
+            console.timeEnd("Score semester");
+
+            return scoreSemester;
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    
+}
+
+function setAuthCookie(jar, token) {
+    const date = (new Date(86400000 + 1000*60*30 + +new Date())).toLocaleString();
+
+    jar.setCookie(
+        'AUTH_COOKIE=' + token + '|' + date + '; path=/', 
+        'http://sso.tdt.edu.vn/Authenticate.aspx'
+    );
 }
 
 module.exports = new School;
