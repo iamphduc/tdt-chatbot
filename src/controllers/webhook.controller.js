@@ -1,9 +1,10 @@
 
 const request = require('request');
 
-const scheduleHelper = require('../server/school');
+const school = require('../server/school');
 
-const dateConst = require('../constants/weekday.const.js');
+const weekdayConst = require('../constants/weekday.const.js');
+const { currSemester, scoreSemester } = require('../constants/school.const');
 
 class WebhookController {
 
@@ -79,65 +80,119 @@ async function handleMessage(sender_psid, received_message, reply=false) {
 
     // Check if the message contains text
     if (message) {
-        let { mssv, pass } = JSON.parse(process.env[sender_psid]);
+        // setAccount(sender_psid, '51900790', '51900790');
+        let account = getAccount(sender_psid);
+        let lower = message.toLowerCase();
 
-        if (message.toLowerCase().includes('login ')) {
-            response = { "text": `Đã ghi nhận thông tin của bạn.\nNhớ xoá tin nhắn để bảo vệ tài khoản nhé!`,}
+        switch(true) {
+            case lower.includes('login '):
+                response = { "text": `Đã ghi nhận thông tin của bạn.\nNhớ xoá tin nhắn để bảo vệ tài khoản nhé!`,}
 
-            process.env[sender_psid] = message.slice(6, 6 + 8);
-            process.env[sender_psid] = message.slice(6 + 8 + 1, message.length);
+                setAccount(
+                    sender_psid,                            // sender id
+                    lower.slice(6, 6 + 8),                  // mssv
+                    lower.slice(6 + 8 + 1, lower.length)    // pass
+                );
 
-        } else if (equalsIn(message, 'week')) { // get current week
-            if (mssv && pass) {
+                process.env.account = (process.env.account ? process.env.account : '') + ',' + sender_psid; 
 
-                await checkSchedule(mssv, pass, sender_psid);
-    
-                response = { "text": toMessage(process.env.SCHEDULE) }
+                break;
 
-            }
+            case !account: break;
 
-        } else if (equalsIn(message, 'today')) { // get today
-            if (mssv && pass) {
+            case lower == 'week':
+                if (!account.current) {
+                    handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB tuần này nhé!' }, true);
 
-                await checkSchedule(mssv, pass, sender_psid);
+                    await getSchedule(account);
+                    account = await getAccount(sender_psid);
+                }
+
+                response = { 
+                    "text": toScheduleMessage(account.current) ? toScheduleMessage(account.current) : 'Tuần này không có lịch học' 
+                }
+
+                break;
+
+            case lower == 'today':
+                if (!account.current) {
+                    handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB tuần này nhé!' }, true);
+
+                    await getSchedule(account);
+                    account = await getAccount(sender_psid);
+                }
 
                 const date = new Date().getDate();
-                const schedule = JSON.parse(process.env.SCHEDULE);
-                const todaySchedule = schedule.filter(ele => ele.date.includes(date));
+                const todaySchedule = account.current.filter(ele => ele.date.includes(date));
 
-                response = { "text": toMessage(todaySchedule) }
+                response = { 
+                    "text": toScheduleMessage(todaySchedule) ? toScheduleMessage(todaySchedule) : 'Hôm nay không có lịch học'
+                }
 
-            }
-            
-        } else if (dateConst[message.toLowerCase()]) { // get weekday
-            if (mssv && pass) {
+                break;
 
-                await checkSchedule(mssv, pass, sender_psid);
+            case weekdayConst[lower] !== undefined:
+                if (!account.current) {
+                    handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB tuần này nhé!' }, true);
 
-                const schedule = JSON.parse(process.env.SCHEDULE);
-                const dateSchedule = schedule.filter(ele => ele.date.includes(dateConst[message.toLowerCase()]));
+                    await getSchedule(account);
+                    account = await getAccount(sender_psid);
+                }
 
-                response = { "text": toMessage(dateSchedule) }
+                const dateSchedule = account.current.filter(ele => ele.date.includes(weekdayConst[lower]));
 
-            }            
+                response = { 
+                    "text": toScheduleMessage(dateSchedule) ? toScheduleMessage(dateSchedule) : (weekdayConst[lower] + ' không có lịch học')
+                }
 
-        } else if (equalsIn(message, 'update')) {
-            if (mssv && pass) {
+                break;
 
-                await getSchedule(mssv, pass, sender_psid);
+            case lower == 'update':
+                handleMessage(sender_psid, { 'text': 'Bạn đợi mình cập nhật TKB tuần này nhé!' }, true);
+                await getSchedule(account);
+                account = await getAccount(sender_psid);
 
-                response = { "text": toMessage(process.env.SCHEDULE) }
+                response = { 
+                    "text": toScheduleMessage(account.current) ? toScheduleMessage(account.current) : 'Tuần này không có lịch học' 
+                }
 
-            }
+                break;
 
-        } else if (equalsIn(message, 'next')) {
-            if (mssv && pass) {
+            case lower == 'next':
+                if (!account.next) {
+                    handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB tuần sau nhé!' }, true);
 
-                await checkNextSchedule(mssv, pass, sender_psid);
-    
-                response = { "text": toMessage(process.env.NEXT) }
+                    await getSchedule(account, true);
+                    account = await getAccount(sender_psid);
+                }
 
-            }
+                response = { 
+                    "text": toScheduleMessage(account.next) ? toScheduleMessage(account.next) : 'Tuần sau không có lịch học' 
+                }
+
+                break;
+
+            case lower == 'next update':
+                handleMessage(sender_psid, { 'text': 'Bạn đợi mình cập nhật TKB tuần sau nhé!' }, true);
+
+                await getSchedule(account, true);
+                account = await getAccount(sender_psid);
+
+                response = { 
+                    "text": toScheduleMessage(account.next) ? toScheduleMessage(account.next) : 'Tuần sau không có lịch học' 
+                }
+
+                break;
+
+            case lower.includes('score'):
+                let semester = lower.slice(6);
+
+
+                break;
+
+            case lower == 'score total':
+                break;
+                
         }
 
         console.log(`receive: '${message}'`);
@@ -148,16 +203,8 @@ async function handleMessage(sender_psid, received_message, reply=false) {
     callSendAPI(sender_psid, response);    
 }
 
-// Compares string insensitive
-function equalsIn(a, b) {
-    return typeof a === 'string' && typeof b === 'string'
-        ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
-        : a === b;
-}
-
 // Sends response messages via the Send API
 function callSendAPI(sender_psid, response) {
-    
     // Construct the message body
     let request_body = {
         "recipient": { "id": sender_psid },
@@ -180,58 +227,34 @@ function callSendAPI(sender_psid, response) {
     });
 }
 
-// Check if schedule has been loaded
-async function checkSchedule(mssv, pass, sender_psid) {
-    if (!process.env.SCHEDULE) {
-
-        try {
-
-            await getSchedule(mssv, pass, sender_psid);
-
-        } catch (err) {
-            console.error(err);
-        }
-    }
+function setAccount(sender_psid, mssv, pass, current='', next='', score='', scoreTotal='', test='') {
+    process.env[sender_psid] = JSON.stringify(
+        { sender_psid, mssv, pass, current, next, score, scoreTotal, test,}
+    );
 }
 
-// Check if next week schedule has been loaded
-async function checkNextSchedule(mssv, pass, sender_psid) {
-    if (!process.env.NEXT) {
-
-        try {
-
-            await getSchedule(mssv, pass, sender_psid, true);
-
-        } catch (err) {
-            console.error(err);
-        }
-    }
+function getAccount(sender_psid) {
+    return process.env[sender_psid] ? JSON.parse(process.env[sender_psid]) : '';
 }
 
-// get schedule
-async function getSchedule(mssv, pass, sender_psid, next=false) {
-
-    handleMessage(sender_psid, { 'text': 'Bạn đợi mình lấy TKB nhé!' }, true);
+async function getSchedule(account, next=false) {
+    const { sender_psid, mssv, pass, currentWeek , nextWeek } = account;
 
     try {
 
-        let subjectList = await scheduleHelper.getSchedule(mssv, pass, next);
+        let subjectList = await school.getSchedule(mssv, pass, next);
         
-        if (next) {
-            process.env.NEXT = JSON.stringify(subjectList);
-        } else {
-            process.env.SCHEDULE = JSON.stringify(subjectList);
-        }
-
+        if (!next) setAccount(sender_psid, mssv, pass, subjectList, nextWeek);
+        else setAccount(sender_psid, mssv, pass, currentWeek, subjectList);
+        
     } catch (err) {
         console.error(err);
     }
 }
 
-// Format schedule to readable message
-function toMessage(schedule) {
+function toScheduleMessage(schedule) {
     if (schedule.length == 0)
-        return 'Không tìm thấy lịch học';
+        return '';
 
     if (typeof schedule === 'string')
         schedule = JSON.parse(schedule);
@@ -246,6 +269,21 @@ function toMessage(schedule) {
     });
 
     return readableSchedule.join('\n');
+}
+
+async function getScore(account, semester=undefined, total=false) {
+    const { sender_psid, mssv, pass, score , scoreTotal } = account;
+
+    try {
+
+        let scoreList = await school.getScore(mssv, pass, semester, total);
+        
+        if (!total) setAccount(sender_psid, mssv, pass, undefined, undefined, scoreList, scoreTotal);
+        else setAccount(sender_psid, mssv, pass, undefined, undefined, score, scoreList);
+        
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 module.exports = new WebhookController()
