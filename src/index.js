@@ -3,15 +3,16 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const router = require('./routes/web');
+const router = require('./routes/web.route');
+const viewEngine = require('./config/viewEngine.config');
 
 
 app.use(express.json()); // handle XMLHttpRequest, fetch,...
 app.use(express.urlencoded({ extended: true })); // handle FormData
 
+viewEngine(app);
 
 router(app);
-
 
 app.listen(port, () => {
     console.log(`App: http://localhost:${port}`);
