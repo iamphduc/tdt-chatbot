@@ -2,7 +2,6 @@
 var rp = require('request-promise');
 const cheerio = require('cheerio');
 
-const { currSemester, scoreSemester } = require('../constants/school.const');
 
 class School {
 
@@ -52,7 +51,7 @@ class School {
                     __LASTFOCUS: $schedule('#__LASTFOCUS').val(),
                     __VIEWSTATE: $schedule('#__VIEWSTATE').val(),
                     __VIEWSTATEGENERATOR: $schedule('#__VIEWSTATEGENERATOR').val(),
-                    'ThoiKhoaBieu1$cboHocKy': currSemester == 0 ? $schedule('#ThoiKhoaBieu1_cboHocKy').find(':selected').val() : currSemester,
+                    'ThoiKhoaBieu1$cboHocKy': process.env.SCHEDULE,
                     'ThoiKhoaBieu1$radChonLua': 'radXemTKBTheoTuan',
                 },
                 resolveWithFullResponse: true,
@@ -73,7 +72,7 @@ class School {
             });
     
             console.timeEnd("Current schedule");
-
+            
             if (!next) { return this.cheerioSchedule(currentSchedule.body); }
 
 
@@ -90,7 +89,7 @@ class School {
                     __LASTFOCUS: $schedule('#__LASTFOCUS').val(),
                     __VIEWSTATE: $schedule('#__VIEWSTATE').val(),
                     __VIEWSTATEGENERATOR: $schedule('#__VIEWSTATEGENERATOR').val(),
-                    'ThoiKhoaBieu1$cboHocKy': currSemester == 0 ? $schedule('#ThoiKhoaBieu1_cboHocKy').find(':selected').val() : currSemester,
+                    'ThoiKhoaBieu1$cboHocKy': process.env.SCHEDULE,
                     'ThoiKhoaBieu1$radChonLua': 'radXemTKBTheoTuan',
                     'ThoiKhoaBieu1$btnTuanSau': 'Tuần sau|Following week >>',
                 },
@@ -105,7 +104,6 @@ class School {
             });
     
             console.timeEnd("Next schedule");
-
 
             return this.cheerioSchedule(nextSchedule);
 
@@ -169,7 +167,7 @@ class School {
         return subjectList;
     }
 
-    async getScore(mssv, pass, semester=scoreSemester[Object.keys(scoreSemester)[0]] , total=false) {
+    async getScore(mssv, pass, semester=process.env.SCORE , total=false) {
         try {
             
             await this.login(mssv, pass);
@@ -317,11 +315,46 @@ class School {
             process.env.AUTHTOKEN = responseLogin.url.slice(-8);
             setAuthCookie(this.jar, process.env.AUTHTOKEN);
             
-
             console.timeEnd("\n========== REQUEST ==========\nLogin");
 
         } catch (err) {
             
+        }
+    }
+
+    async getScheduleSemester(mssv, pass) {
+        try {
+
+            await this.login(mssv, pass);
+
+    
+            // ===== SCHEDULE ===== //
+    
+            console.time("Schedule");
+    
+            const schedule = await rp({
+                uri: 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx',
+                resolveWithFullResponse: true,
+                json: true,
+            });
+    
+            console.timeEnd("Schedule");
+
+            const $ = cheerio.load(schedule.body);
+
+            let scheduleSemester = [];
+            $('#ThoiKhoaBieu1_cboHocKy').find('option').each(function() {
+                scheduleSemester.push({
+                    text: $(this).text(),
+                    value: $(this).val(),
+                    isSelected: $(this).prop('selected') ? true : false,
+                });
+            });
+
+            return scheduleSemester;
+
+        } catch (error) {
+            return error;
         }
     }
 
