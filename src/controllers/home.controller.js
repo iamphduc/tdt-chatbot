@@ -87,6 +87,43 @@ class ScheduleController {
         }
     }
 
+    // [GET/POST] /config
+    async configSemmester(req, res) {
+        try {
+
+            // ===== POST ===== //
+            let isSchedule = req.body.isSchedule;
+            let isScore = req.body.isScore;
+            let configSchedule = req.body.schedule;
+            let configScore = req.body.score;
+
+            if (Object.keys(req.body).length !== 0) {
+                process.env.IS_SCHEDULE = isSchedule;
+                process.env.IS_SCORE = isScore;
+                process.env.SCHEDULE = configSchedule;
+                process.env.SCORE = configScore;
+
+                return;
+            }
+
+            // ===== GET ===== //
+            let scheduleSemester = await school.getScheduleSemester(process.env.MSSV, process.env.PASS);
+            let scoreSemester = await school.getScoreSemester(process.env.MSSV, process.env.PASS);
+
+            res.render('config', {
+                scheduleSemester,
+                scoreSemester,
+                isSchedule: (process.env.IS_SCHEDULE == 'true') ? true : false,
+                isScore: (process.env.IS_SCORE == 'true') ? true : false,
+                configSchedule: process.env.SCHEDULE ? process.env.SCHEDULE : '',
+                configScore: process.env.SCORE ? process.env.SCORE : '',
+            });
+
+        } catch (error) {
+            res.send(error);
+        }
+    }
+
     // [GET] /testing
     async testApi(req, res) {
 
@@ -108,7 +145,11 @@ class ScheduleController {
             // let ret = await school.getScore(mssv, pass, undefined, true);
 
             let ret = await school.getScoreSemester(mssv, pass);
+
+            // let ret = await school.getScheduleSemester(mssv, pass);
             
+            if (!ret) res.sendStatus(404);
+
             return res.json(ret);
     
         } catch (err) {
