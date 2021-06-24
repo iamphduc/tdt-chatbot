@@ -19,6 +19,10 @@ const route = (app) => {
 
     app.get('/testing', homeController.testApi);
 
+    app.post('/config', homeController.configSemmester);
+
+    app.get('/config', homeController.configSemmester);    
+
     app.get('/', (req, res) => { res.sendStatus(404) });
 
 }
