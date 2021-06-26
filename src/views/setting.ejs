@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot | Configuration</title>
+
+    <style>
+        .container {
+            padding: 0 20vw;
+        }
+
+        .title {
+            display: flex; 
+            justify-content: center;
+        }
+
+        .div-45 {
+            float: left;
+            width: calc(50% - 21px);
+        }
+
+        .div-split {
+            float: left;
+            border-left: 2px solid black;
+            height: 170px;
+            margin: 0 20px
+        }
+
+        .margin-vertical {
+            margin: 20px 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="title">
+            <h1>SETTING</h1>
+        </div>
+
+        <div class="div-45">
+
+            <h3>Schedule</h3>
+
+            <div class="margin-vertical>
+                <label for="default-schedule">Default: </label>
+                <select id="default-schedule">
+                    <% scheduleSemester.forEach(function(semester) { %>
+                        <option value="<%= semester.value %>" <%= semester.isSelected ? 'selected' : '' %> disabled>
+                            <%= semester.text %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+            
+            <div class="margin-vertical">
+                <label for="chk-schedule">Manually: </label>
+                <input type="checkbox" id="chk-schedule" <%= isSchedule ? 'checked' : '' %> >
+            </div>
+            
+            <div class="margin-vertical">
+                <label for="config-schedule">Configuration: </label>
+                <select id="config-schedule">
+                    <% scheduleSemester.forEach(function(semester) { %>
+                        <option value="<%= semester.value %>" <%= semester.value == configSchedule ? 'selected' : '' %> >
+                            <%= semester.text %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+        </div>
+
+        <div class="div-split"></div>
+
+        <div class="div-45">
+
+            <h3>Score</h3>
+
+            <div class="margin-vertical">
+                <label for="default-score">Default: </label>
+                <select id="default-score">
+                    <% scoreSemester.forEach(function(score, i) { %>
+                        <option value="<%= score.NameTable %>" <%= (i == 0) ? 'selected' : '' %> disabled >
+                            <%= score.TenHocKy %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="margin-vertical">
+                <label for="chk-score">Manually: </label>
+                <input type="checkbox" id="chk-score" <%= isScore ? 'checked' : '' %> >
+            </div>
+
+            <div class="margin-vertical">
+                <label for="config-score">Configuration: </label>
+                <select id="config-score">
+                    <% scoreSemester.forEach(function(score) { %>
+                        <option value="<%= score.NameTable %>" <%= score.NameTable == configScore ? 'selected' : '' %> >
+                            <%= score.TenHocKy %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+        </div>
+
+        <div style="clear:both; float:right">
+            <button id="btn-submit" type="button">Submit</button>
+        </div>
+
+    </div>
+
+    <script 
+        src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous"
+        >
+    </script>
+
+    <script>
+        const chkSchedule = $('#chk-schedule');
+        const chkScore = $('#chk-score');
+
+        if (chkSchedule.is(':checked')) {
+            $('#default-schedule').prop('disabled', true);
+            $('#config-schedule').prop('disabled', false);
+        } else {
+            $('#default-schedule').prop('disabled', false);
+            $('#config-schedule').prop('disabled', true);
+        }
+
+        if (chkScore.is(':checked')) {
+            $('#default-score').prop('disabled', true);
+            $('#config-score').prop('disabled', false);
+        } else {
+            $('#default-score').prop('disabled', false);
+            $('#config-score').prop('disabled', true);
+        }
+
+        chkSchedule.click(function() {
+            if ($(this).is(':checked')) {
+                $('#default-schedule').prop('disabled', true);
+                $('#config-schedule').prop('disabled', false);
+            } else {
+                $('#default-schedule').prop('disabled', false);
+                $('#config-schedule').prop('disabled', true);
+            }
+        });
+
+        chkScore.click(function() {
+            if ($(this).is(':checked')) {
+                $('#default-score').prop('disabled', true);
+                $('#config-score').prop('disabled', false);
+            } else {
+                $('#default-score').prop('disabled', false);
+                $('#config-score').prop('disabled', true);
+            }
+        });
+
+        $('#btn-submit').click(function() {
+            const root = location.protocol + '//' + location.hostname;
+
+            const isSchedule = chkSchedule.is(':checked');
+            const isScore = chkScore.is(':checked');
+
+            const defaultSchedule = $('#default-schedule').find(':checked').val();
+            const defaultScore = $('#default-score').find(':checked').val();
+
+            const configSchedule = $('#config-schedule').find(':checked').val();
+            const configScore = $('#config-score').find(':checked').val();
+
+            $.post(root + ':3000/setting', {
+                isSchedule,
+                isScore,
+                schedule: isSchedule ? configSchedule : defaultSchedule,
+                score: isScore ? configScore : defaultScore,
+            });
+        });
+
+    </script>
+</body>
+</html>
