@@ -1,45 +1,35 @@
 
-const school = require('../server/school');
+const school = require('../classes/school');
 
-class ScheduleController {
+class WebController {
 
-    // [POST] /api/current
+    // [POST] /api/week
     async getSchedule(req, res) {
-
         const mssv = req.body.mssv;
         const pass = req.body.pass;
     
-        if (!mssv || !pass) {
-            return res.send('<p style="font-size:24px;">POST: mssv= & pass= </p>');
-        }
+        if (!mssv || !pass) return res.sendStatus(404);
 
         try {
-            
-            let subjectList = await school.getSchedule(mssv, pass);
-            
+            const subjectList = await school.getSchedule(mssv, pass);
+
             return res.json(subjectList);
-    
         } catch (err) {
             res.send(err);
         }
     }
 
-    // [POST] /api/next
+    // [POST] /api/week-next
     async getNextSchedule(req, res) {
-
         const mssv = req.body.mssv;
         const pass = req.body.pass;
     
-        if (!mssv || !pass) {
-            return res.send('<p style="font-size:24px;">POST: mssv= & pass= </p>');
-        }
+        if (!mssv || !pass) return res.sendStatus(404);
 
         try {
-            
-            let subjectList = await school.getSchedule(mssv, pass, true);
+            const subjectList = await school.getSchedule(mssv, pass, true);
             
             return res.json(subjectList);
-    
         } catch (err) {
             res.send(err);
         }
@@ -47,20 +37,15 @@ class ScheduleController {
 
     // [POST] /api/score
     async getScore(req, res) {
-
         const mssv = req.body.mssv;
         const pass = req.body.pass;
     
-        if (!mssv || !pass) {
-            return res.send('<p style="font-size:24px;">POST: mssv= & pass= </p>');
-        }
+        if (!mssv || !pass) return res.sendStatus(404);
 
         try {
-            
-            let score = await school.getScore(mssv, pass, undefined);
+            const score = await school.getScore(mssv, pass, undefined);
             
             return res.json(score);
-    
         } catch (err) {
             res.send(err);
         }
@@ -68,34 +53,28 @@ class ScheduleController {
     
     // [POST] /api/score-total
     async getTotalScore(req, res) {
-
         const mssv = req.body.mssv;
         const pass = req.body.pass;
     
-        if (!mssv || !pass) {
-            return res.send('<p style="font-size:24px;">POST: mssv= & pass= </p>');
-        }
+        if (!mssv || !pass) return res.sendStatus(404);
 
         try {
-            
-            let totalScore = await school.getScore(mssv, pass, undefined, true);
+            const totalScore = await school.getScore(mssv, pass, undefined, true);
             
             return res.json(totalScore);
-    
         } catch (err) {
             res.send(err);
         }
     }
 
-    // [GET/POST] /config
-    async configSemmester(req, res) {
+    // [ALL] /seting
+    async setting(req, res) {
         try {
-
             // ===== POST ===== //
-            let isSchedule = req.body.isSchedule;
-            let isScore = req.body.isScore;
-            let configSchedule = req.body.schedule;
-            let configScore = req.body.score;
+            const isSchedule = req.body.isSchedule;
+            const isScore = req.body.isScore;
+            const configSchedule = req.body.schedule;
+            const configScore = req.body.score;
 
             if (Object.keys(req.body).length !== 0) {
                 process.env.IS_SCHEDULE = isSchedule;
@@ -103,14 +82,15 @@ class ScheduleController {
                 process.env.SCHEDULE = configSchedule;
                 process.env.SCORE = configScore;
 
+                console.log('SETTING_SUCCESS');
                 return;
             }
 
             // ===== GET ===== //
-            let scheduleSemester = await school.getScheduleSemester(process.env.MSSV, process.env.PASS);
-            let scoreSemester = await school.getScoreSemester(process.env.MSSV, process.env.PASS);
+            const scheduleSemester = await school.getScheduleSemester(process.env.MSSV, process.env.PASS);
+            const scoreSemester = await school.getScoreSemester(process.env.MSSV, process.env.PASS);
 
-            res.render('config', {
+            res.render('setting', {
                 scheduleSemester,
                 scoreSemester,
                 isSchedule: (process.env.IS_SCHEDULE == 'true') ? true : false,
@@ -124,18 +104,14 @@ class ScheduleController {
         }
     }
 
-    // [GET] /testing
-    async testApi(req, res) {
-
+    // [GET] /test-get
+    async testGet(req, res) {
         const mssv = req.query.mssv;
         const pass = req.query.pass;
     
-        if (!mssv || !pass) {
-            return res.send('<p style="font-size:24px;">GET: api= & mssv= & pass= </p>');
-        }
+        if (!mssv || !pass) return res.sendStatus(404);
 
         try {
-
             // let ret = await school.getSchedule(mssv, pass);
 
             // let ret = await school.getSchedule(mssv, pass, true);
@@ -151,11 +127,10 @@ class ScheduleController {
             if (!ret) res.sendStatus(404);
 
             return res.json(ret);
-    
         } catch (err) {
             res.send(err);
         }
     }
 }
 
-module.exports = new ScheduleController()
+module.exports = new WebController()

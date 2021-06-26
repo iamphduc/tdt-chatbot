@@ -3,8 +3,8 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const router = require('./routes/web.route');
-const viewEngine = require('./config/viewEngine.config');
+const router = require('./routes/web');
+const viewEngine = require('./configs/view-engine');
 
 
 app.use(express.json()); // handle XMLHttpRequest, fetch,...
@@ -16,4 +16,4 @@ router(app);
 
 app.listen(port, () => {
     console.log(`App: http://localhost:${port}`);
-})
+});
