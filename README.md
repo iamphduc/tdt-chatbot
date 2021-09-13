@@ -1,7 +1,8 @@
-# TON DUC THANG University Schedule Scraping
+# TDT Chatbot
 
-Using request-promise - cheerio - express.
+A Facebook chatbot that sends schedule and study results to user.
 
-## Note
-
-Only work on new Student Portal.
+Using:
+- request-promise 
+- cheerio 
+- express
