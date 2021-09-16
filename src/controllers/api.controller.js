@@ -43,7 +43,7 @@ class ApiController {
     }
   }
 
-  // [POST] /api/score-total
+  // [POST] /api/score-all
   async getScoreAll(req, res) {
     const { mssv, pass } = req.body;
 

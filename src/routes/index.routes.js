@@ -11,7 +11,7 @@ const route = (app) => {
   app.post('/api/week', apiController.getSchedule);
   app.post('/api/week-next', apiController.getScheduleNext);
   app.post('/api/score', apiController.getScore);
-  app.post('/api/score-total', apiController.getScoreAll);
+  app.post('/api/score-all', apiController.getScoreAll);
 
   // setting
   app.get('/setting', settingController.getSetting);
