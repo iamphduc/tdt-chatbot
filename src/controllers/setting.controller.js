@@ -9,8 +9,13 @@ class SettingController {
     try {
       const { MSSV, PASS, CONFIG } = process.env;
 
-      const scheduleOptions = await Schedule.getScheduleSemester(MSSV, PASS);
-      const scoreOptions = await Score.getScoreSemester(MSSV, PASS);
+      // const scheduleOptions = await Schedule.getScheduleSemester(MSSV, PASS);
+      // const scoreOptions = await Score.getScoreSemester(MSSV, PASS);
+
+      const [scheduleOptions, scoreOptions] = await Promise.all([
+        Schedule.getScheduleSemester(MSSV, PASS),
+        Score.getScoreSemester(MSSV, PASS),
+      ]);
 
       const defaultSchedule = scheduleOptions.find((ele) => ele.isSelected);
       const defaultScore = scoreOptions[0];
@@ -23,7 +28,7 @@ class SettingController {
         configSchedule || defaultSchedule.value,
         configScore || defaultScore.NameTable
       );
-      console.log(process.env.SEMESTER);
+      console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
 
       return res.render('setting', {
         scheduleOptions,
@@ -47,14 +52,15 @@ class SettingController {
 
     setSemester(configSchedule, configScore);
     console.log('SETTING_SUCCESS');
-    console.log(process.env.SEMESTER);
+    console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
 
     return res.status(200).json({ message: 'success' });
   }
 }
 
-function setSemester(SCHEDULE, SCORE) {
-  process.env.SEMESTER = JSON.stringify({ SCHEDULE, SCORE });
+function setSemester(schedule, score) {
+  process.env.SEMESTER_SCHEDULE = schedule;
+  process.env.SEMESTER_SCORE = score;
 }
 
 module.exports = new SettingController();
