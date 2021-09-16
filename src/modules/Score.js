@@ -25,7 +25,7 @@ class Score extends School {
   }
 
   // ===== GOTO SCORE PAGE ===== //
-  async goToScorePage(semester = process.env.SCORE) {
+  async goToScorePage() {
     try {
       console.time('Score home');
       const scoreHome = await rp({
@@ -49,7 +49,7 @@ class Score extends School {
   }
 
   // ===== SCORE + GPA ===== //
-  async getScore(mssv, pass, semester = 110) {
+  async getScore(mssv, pass, semester = process.env.SEMESTER_SCORE) {
     try {
       await super.login(mssv, pass);
       const { lop, hedaotao } = await this.goToScorePage();
@@ -58,12 +58,7 @@ class Score extends School {
       console.time('Score');
       const score = await rp({
         uri: URL.score,
-        qs: {
-          mssv,
-          nametable: semester,
-          hedaotao,
-          time: Date.now(),
-        },
+        qs: { mssv, nametable: semester, hedaotao, time: Date.now() },
         json: true,
       });
       console.timeEnd('Score');
@@ -72,12 +67,7 @@ class Score extends School {
       console.time('GPA');
       const GPA = await rp({
         uri: URL.gpa,
-        qs: {
-          lop,
-          mssv,
-          tenBangDiem: semester,
-          time: Date.now(),
-        },
+        qs: { lop, mssv, tenBangDiem: semester, time: Date.now() },
         json: true,
       });
       console.timeEnd('GPA');
@@ -91,22 +81,17 @@ class Score extends School {
     }
   }
 
-  // ===== SCORE TOTAL ===== //
+  // ===== SCORE ALL ===== //
   async getScoreAll(mssv, pass) {
     try {
-      await this.login(mssv, pass);
+      await super.login(mssv, pass);
       const { hedaotao, namvt } = await this.goToScorePage();
 
       // request score total
       console.time('Score total');
       const scoreTotal = await rp({
         uri: URL.all,
-        qs: {
-          mssv,
-          namvt,
-          hedaotao,
-          time: Date.now(),
-        },
+        qs: { mssv, namvt, hedaotao, time: Date.now() },
         json: true,
       });
       console.timeEnd('Score total');
@@ -121,22 +106,20 @@ class Score extends School {
   // ===== SCORE SEMESTER ===== //
   async getScoreSemester(mssv, pass) {
     try {
-      await this.login(mssv, pass);
+      await super.login(mssv, pass);
       const { hedaotao, namvt } = await this.goToScorePage();
 
       // request score semester
       console.time('Score semester');
       const scoreSemester = await rp({
         uri: URL.semester,
-        qs: {
-          mssv,
-          namvt,
-          hedaotao,
-          time: Date.now(),
-        },
+        qs: { mssv, namvt, hedaotao, time: Date.now() },
         json: true,
       });
       console.timeEnd('Score semester');
+
+      // globalize for webhook score message
+      process.env.SCORE_OPTIONS = JSON.stringify(scoreSemester);
 
       return scoreSemester;
     } catch (err) {
