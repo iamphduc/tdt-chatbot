@@ -19,7 +19,7 @@ class Score extends School {
   }
 
   // ===== GOTO SCHEDULE PAGE ===== //
-  async goSchedulePage() {
+  async goSchedulePage(noData = false) {
     try {
       console.time('Schedule page');
       const schedulePage = await rp({
@@ -30,6 +30,10 @@ class Score extends School {
 
       // cheerio
       const $ = cheerio.load(schedulePage.body);
+
+      // for schedule semester
+      if (noData) return $;
+
       const data = {
         search: schedulePage.request.uri.search,
         __EVENTTARGET: $('#__EVENTTARGET').val(),
@@ -37,8 +41,6 @@ class Score extends School {
         __LASTFOCUS: $('#__LASTFOCUS').val(),
         __VIEWSTATE: $('#__VIEWSTATE').val(),
         __VIEWSTATEGENERATOR: $('#__VIEWSTATEGENERATOR').val(),
-        current: $('#ThoiKhoaBieu1_cboHocKy option:selected').val(),
-        $,
       };
 
       return data;
@@ -51,27 +53,17 @@ class Score extends School {
   // ===== CHANGE SCHEDULE ===== //
   async changeSchedule(data, next = false) {
     try {
-      const {
-        __EVENTTARGET,
-        __EVENTARGUMENT,
-        __LASTFOCUS,
-        __VIEWSTATE,
-        __VIEWSTATEGENERATOR,
-        search,
-      } = data;
+      const { search, ...others } = data;
 
       const formData = {
-        __EVENTTARGET,
-        __EVENTARGUMENT,
-        __LASTFOCUS,
-        __VIEWSTATE,
-        __VIEWSTATEGENERATOR,
-        ThoiKhoaBieu1$cboHocKy: 110,
+        ...others,
+        ThoiKhoaBieu1$cboHocKy: process.env.SEMESTER_SCHEDULE,
         ThoiKhoaBieu1$radChonLua: 'radXemTKBTheoTuan',
       };
 
       if (next)
         formData['ThoiKhoaBieu1$btnTuanSau'] = 'Tuần sau|Following week >>';
+      else formData['ThoiKhoaBieu1$btnTuanHienTai'] = '';
 
       console.time('Change schedule');
       await rp({
@@ -122,7 +114,7 @@ class Score extends School {
   async getScheduleSemester(mssv, pass) {
     try {
       await this.login(mssv, pass);
-      const { $ } = await this.goSchedulePage();
+      const $ = await this.goSchedulePage(true);
 
       const scheduleSemester = [];
       $('#ThoiKhoaBieu1_cboHocKy')
