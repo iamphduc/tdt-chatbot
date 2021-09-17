@@ -1,7 +1,7 @@
 {
-  "name": "tdt-schedule-request",
+  "name": "tdt-chatbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Facebook chatbot and scraping web",
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.js"
