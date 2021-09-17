@@ -59,8 +59,8 @@ class SettingController {
 }
 
 function setSemester(schedule, score) {
-  process.env.SEMESTER_SCHEDULE = schedule;
-  process.env.SEMESTER_SCORE = score;
+  if (schedule) process.env.SEMESTER_SCHEDULE = schedule;
+  if (score) process.env.SEMESTER_SCORE = score;
 }
 
 module.exports = new SettingController();
