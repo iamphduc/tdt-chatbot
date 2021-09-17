@@ -28,6 +28,7 @@ Checkout this guide: [https://developers.facebook.com/docs/messenger-platform/ge
 - ejs
 
 ## Screenshots
+Click on the image to view full size.
 
 Login                        | Help&nbsp;                  | Week                        | Week next                        | Today
 ---------------------------- | --------------------------- | --------------------------- | -------------------------------- | ------------------------------
