@@ -1,27 +1,29 @@
 # TDT Chatbot
-This project is a Facebook chatbot which replies to predefined messages. 
-
-It first scrapes data from Student Portal and then sends them to user through a Facebook page.
-
-The page has been turned off for private use only. So sadly you can't find it!
-
-## Purpose
-The main purpose is to practice scraping and make a Facebook chatbot. There is no harmful intention to Student Portal.
+This project is a Facebook chatbot that sends schedule and score scraped from TDTU Student Portal.
 
 ## Usage
 ### For those who have access to my Facebook page
-Check [the screenshots below](#screenshots), especially the **Help** one.
+Check [the screenshots below](#screenshots), especially **Help** and **Menu**.
 
 ### For those who clone this project
-1. Make sure to set up the Semester in the ```/setting``` page on your first run.
-2. Create a ```.env``` file which contains ```PAGE_ACCESS_TOKEN=```, ```VERIFY_TOKEN=```, ```MSSV=```, ```PASS=```.
-3. Create a Facebook page.
-4. Use *ngrok* to run app locally or you can deploy on *heroku*.
+#### *Please remember to use it responsibly*
+1. Create a ```.env``` and fill in the corresponding values.
+```
+PAGE_ACCESS_TOKEN=
+VERIFY_TOKEN=
+MSSV=
+PASS=
+```
+2. Follow this guide: [https://developers.facebook.com/docs/messenger-platform/getting-started](https://developers.facebook.com/docs/messenger-platform/getting-started)
+3. Make sure to set up Semester in ```http://localhost:5000/setting``` on your first run.
 
-Checkout this guide: [https://developers.facebook.com/docs/messenger-platform/getting-started/sample-experience](https://developers.facebook.com/docs/messenger-platform/getting-started/sample-experience)
+## Why did I do this project?
+The main purpose is to practice scraping and make a Facebook chatbot. This app also makes my student life more convenient.
+
+There is no harmful intention to TDTU Student Portal.
 
 ## Tool used
-```Node v14.16.0``` and ```npm v6.14.11```, others:
+```Node v14.16.0``` and ```npm v6.14.11```, worth mentioning:
 - request-promise 
 - cheerio 
 - express
@@ -30,10 +32,14 @@ Checkout this guide: [https://developers.facebook.com/docs/messenger-platform/ge
 ## Screenshots
 Click on the image to view full size.
 
-Login                        | Help&nbsp;                  | Week                        | Week next                        | Today
----------------------------- | --------------------------- | --------------------------- | -------------------------------- | ------------------------------
-![](screenshots/1_login.jpg) | ![](screenshots/2_help.jpg) | ![](screenshots/3_week.jpg) | ![](screenshots/4_week-next.jpg) | ![](screenshots/5_weekday.jpg)
+Help                                           | Menu                        
+---------------------------------------------- | ---------------------------- 
+<img src="screenshots/2_help.jpg" width=250 /> | <img src="screenshots/10_menu.jpg" width=250 />
 
-Score                        | Score all                        | Score all                        | Score -&nbsp;                       | Score -&nbsp;
----------------------------- | -------------------------------- | -------------------------------- | ----------------------------------- | -----------------------------------
-![](screenshots/6_score.jpg) | ![](screenshots/7_score-all.jpg) | ![](screenshots/8_score-all.jpg) | ![](screenshots/9_score-custom.jpg) | ![](screenshots/10_score-custom.jpg)
+Login                        | Week                        | Week next                        | Today
+---------------------------- | --------------------------- | -------------------------------- | ------------------------------
+![](screenshots/1_login.jpg) | ![](screenshots/3_week.jpg) | ![](screenshots/4_week-next.jpg) | ![](screenshots/5_weekday.jpg)
+
+Score                        | Score all                        | Score list                        | Score -                       
+---------------------------- | -------------------------------- | --------------------------------- | ----------------------------------- 
+![](screenshots/6_score.jpg) | ![](screenshots/7_score-all.jpg) | ![](screenshots/8_score-list.jpg) | ![](screenshots/9_score-custom.jpg) 
