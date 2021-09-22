@@ -156,7 +156,7 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
     sat: 'Thứ 7',
     sun: 'CN',
     today: TODAY,
-    tomorrow: TODAY + 1,
+    tomorrow: +TODAY + 1,
   };
 
   if (lower in WEEKDAY)
