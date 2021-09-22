@@ -42,16 +42,17 @@ class Score extends School {
       };
 
       return data;
-    } catch (err) {
-      console.log('Score - goToScorePage error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 
   // ===== SCORE + GPA ===== //
   async getScore(mssv, pass, semester = process.env.SEMESTER_SCORE) {
     try {
-      await super.login(mssv, pass);
+      const loginResult = await super.login(mssv, pass);
+      if (!loginResult) return 'Login failed';
+
       const { lop, hedaotao } = await this.goToScorePage();
 
       // request score
@@ -75,16 +76,17 @@ class Score extends School {
       score.push(GPA);
 
       return score;
-    } catch (err) {
-      console.log('Score - getScore error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 
   // ===== SCORE ALL ===== //
   async getScoreAll(mssv, pass) {
     try {
-      await super.login(mssv, pass);
+      const loginResult = await super.login(mssv, pass);
+      if (!loginResult) return 'Login failed';
+
       const { hedaotao, namvt } = await this.goToScorePage();
 
       // request score total
@@ -97,16 +99,17 @@ class Score extends School {
       console.timeEnd('Score total');
 
       return scoreTotal;
-    } catch (err) {
-      console.log('Score - getScoreTotal error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 
   // ===== SCORE SEMESTER ===== //
   async getScoreSemester(mssv, pass) {
     try {
-      await super.login(mssv, pass);
+      const loginResult = await super.login(mssv, pass);
+      if (!loginResult) return 'Login failed';
+
       const { hedaotao, namvt } = await this.goToScorePage();
 
       // request score semester
@@ -122,9 +125,8 @@ class Score extends School {
       process.env.SCORE_OPTIONS = JSON.stringify(scoreSemester);
 
       return scoreSemester;
-    } catch (err) {
-      console.log('Score - getScoreSemester error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

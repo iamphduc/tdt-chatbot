@@ -20,20 +20,23 @@ class School {
       console.log('========== REQUEST ==========');
 
       console.time('Login');
-      const { url } = await rp({
+      const { url, result } = await rp({
         method: 'POST',
         uri: URL,
         formData: { user, pass },
         json: true,
       });
       console.timeEnd('Login');
+      console.log(result);
+      if (result == 'fail') return false;
 
-      // setting cookie manually is faster than authentication cookie
+      // set cookie manually is much faster than redirect authentication
       const token = url.slice(url.indexOf('Token=') + 6);
       setAuthCookie(this.jar, token);
-    } catch (err) {
-      console.log('School - login error:' + err);
-      return err;
+
+      return true;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

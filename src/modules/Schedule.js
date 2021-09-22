@@ -44,9 +44,8 @@ class Score extends School {
       };
 
       return data;
-    } catch (err) {
-      console.log('Schedule - goSchedulePage error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -73,18 +72,18 @@ class Score extends School {
         simple: false,
       });
       console.timeEnd('Change schedule');
-    } catch (err) {
-      console.log('Schedule - changeSchedule error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 
   // ===== GET SCHEDULE ===== //
   async getSchedule(mssv, pass, next = false) {
     try {
-      await this.login(mssv, pass);
-      const data = await this.goSchedulePage();
+      const loginResult = await super.login(mssv, pass);
+      if (!loginResult) return 'Login failed';
 
+      const data = await this.goSchedulePage();
       await this.changeSchedule(data);
 
       // CURRENT SCHEDULE
@@ -105,15 +104,16 @@ class Score extends School {
       console.timeEnd('Next schedule');
 
       return cheerioSchedule(nextSchedule);
-    } catch (err) {
-      console.log('Schedule - getSchedule error: ' + err);
-      return err;
+    } catch (error) {
+      console.log(error);
     }
   }
 
   async getScheduleSemester(mssv, pass) {
     try {
-      await this.login(mssv, pass);
+      const loginResult = await super.login(mssv, pass);
+      if (!loginResult) return 'Login failed';
+
       const $ = await this.goSchedulePage(true);
 
       const scheduleSemester = [];
@@ -129,7 +129,7 @@ class Score extends School {
 
       return scheduleSemester;
     } catch (error) {
-      return error;
+      console.log(error);
     }
   }
 }
