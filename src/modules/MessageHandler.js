@@ -72,7 +72,7 @@ class MessageHandler {
   async handleWeekday(sender_psid, mssv, pass, date) {
     try {
       const today = moment().tz('Asia/Ho_Chi_Minh').format('DD');
-      const notWeekday = { [today]: 'Hôm nay', [today + 1]: 'Ngày mai' };
+      const notWeekday = { [today]: 'Hôm nay', [+today + 1]: 'Ngày mai' };
       const dateText = date in notWeekday ? notWeekday[date] : date;
 
       callSendAPI(sender_psid, {
