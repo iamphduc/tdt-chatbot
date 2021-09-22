@@ -18,8 +18,8 @@ class Score extends School {
     });
   }
 
-  // ===== GOTO SCHEDULE PAGE ===== //
-  async goSchedulePage(noData = false) {
+  // ===== GET SCHEDULE DATA ===== //
+  async getScheduleData(noData = false) {
     try {
       console.time('Schedule page');
       const schedulePage = await rp({
@@ -83,7 +83,7 @@ class Score extends School {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return 'Login failed';
 
-      const data = await this.goSchedulePage();
+      const data = await this.getScheduleData();
       await this.changeSchedule(data);
 
       // CURRENT SCHEDULE
@@ -114,7 +114,7 @@ class Score extends School {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return 'Login failed';
 
-      const $ = await this.goSchedulePage(true);
+      const $ = await this.getScheduleData(true);
 
       const scheduleSemester = [];
       $('#ThoiKhoaBieu1_cboHocKy')
