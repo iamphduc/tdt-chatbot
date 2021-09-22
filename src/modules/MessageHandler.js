@@ -1,4 +1,4 @@
-const moment = require('moment-timezone').tz.setDefault('Asia/Ho_Chi_Minh');
+const moment = require('moment-timezone');
 
 const Schedule = require('./Schedule');
 const Score = require('./Score');
@@ -71,7 +71,7 @@ class MessageHandler {
 
   async handleWeekday(sender_psid, mssv, pass, date) {
     try {
-      const today = moment().toDate().getDate();
+      const today = moment().tz('Asia/Ho_Chi_Minh').format('DD');
       const notWeekday = { [today]: 'Hôm nay', [today + 1]: 'Ngày mai' };
       const dateText = date in notWeekday ? notWeekday[date] : date;
 

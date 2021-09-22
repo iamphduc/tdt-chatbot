@@ -1,4 +1,4 @@
-const moment = require('moment-timezone').tz.setDefault('Asia/Ho_Chi_Minh');
+const moment = require('moment-timezone');
 
 const Handler = require('../modules/MessageHandler');
 
@@ -146,6 +146,7 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
   if (lower in MESSAGE_HANDLER)
     return MESSAGE_HANDLER[lower](sender_psid, mssv, pass);
 
+  const TODAY = moment().tz('Asia/Ho_Chi_Minh').format('DD');
   const WEEKDAY = {
     mon: 'Thứ 2',
     tue: 'Thứ 3',
@@ -154,8 +155,8 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
     fri: 'Thứ 6',
     sat: 'Thứ 7',
     sun: 'CN',
-    today: moment().toDate().getDate(),
-    tomorrow: moment().toDate().getDate() + 1,
+    today: TODAY,
+    tomorrow: TODAY + 1,
   };
 
   if (lower in WEEKDAY)
