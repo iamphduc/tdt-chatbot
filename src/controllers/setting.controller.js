@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const Schedule = require('../modules/Schedule');
 const Score = require('../modules/Score');
 
@@ -8,9 +6,6 @@ class SettingController {
   async getSetting(req, res) {
     try {
       const { MSSV, PASS, CONFIG } = process.env;
-
-      // const scheduleOptions = await Schedule.getScheduleSemester(MSSV, PASS);
-      // const scoreOptions = await Score.getScoreSemester(MSSV, PASS);
 
       const [scheduleOptions, scoreOptions] = await Promise.all([
         Schedule.getScheduleSemester(MSSV, PASS),
