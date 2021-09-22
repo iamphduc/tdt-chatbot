@@ -4,11 +4,11 @@ const cheerio = require('cheerio');
 const School = require('./School');
 
 const URL = {
-  home: 'https://ketquahoctap.tdtu.edu.vn',
-  score: 'https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap',
-  gpa: 'https://ketquahoctap.tdtu.edu.vn/Home/LayDTBHocKy',
-  all: 'https://ketquahoctap.tdtu.edu.vn/Home/LayDiemTongHop',
-  semester: 'https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap',
+  HOME: 'https://ketquahoctap.tdtu.edu.vn',
+  SCORE: 'https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap',
+  GPA: 'https://ketquahoctap.tdtu.edu.vn/Home/LayDTBHocKy',
+  ALL: 'https://ketquahoctap.tdtu.edu.vn/Home/LayDiemTongHop',
+  SEMESTER: 'https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap',
 };
 
 class Score extends School {
@@ -24,12 +24,12 @@ class Score extends School {
     });
   }
 
-  // ===== GOTO SCORE PAGE ===== //
-  async goToScorePage() {
+  // ===== GET SCORE DATA ===== //
+  async getScoreData() {
     try {
       console.time('Score home');
       const scoreHome = await rp({
-        uri: URL.home,
+        uri: URL.HOME,
       });
       console.timeEnd('Score home');
 
@@ -53,12 +53,12 @@ class Score extends School {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return 'Login failed';
 
-      const { lop, hedaotao } = await this.goToScorePage();
+      const { lop, hedaotao } = await this.getScoreData();
 
       // request score
       console.time('Score');
       const score = await rp({
-        uri: URL.score,
+        uri: URL.SCORE,
         qs: { mssv, nametable: semester, hedaotao, time: Date.now() },
         json: true,
       });
@@ -87,12 +87,12 @@ class Score extends School {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return 'Login failed';
 
-      const { hedaotao, namvt } = await this.goToScorePage();
+      const { hedaotao, namvt } = await this.getScoreData();
 
       // request score total
       console.time('Score total');
       const scoreTotal = await rp({
-        uri: URL.all,
+        uri: URL.ALL,
         qs: { mssv, namvt, hedaotao, time: Date.now() },
         json: true,
       });
@@ -110,12 +110,12 @@ class Score extends School {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return 'Login failed';
 
-      const { hedaotao, namvt } = await this.goToScorePage();
+      const { hedaotao, namvt } = await this.getScoreData();
 
       // request score semester
       console.time('Score semester');
       const scoreSemester = await rp({
-        uri: URL.semester,
+        uri: URL.SEMESTER,
         qs: { mssv, namvt, hedaotao, time: Date.now() },
         json: true,
       });
