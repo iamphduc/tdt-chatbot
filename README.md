@@ -21,12 +21,14 @@ Check [the screenshots below](#screenshots), especially the **Help** one.
 Checkout this guide: [https://developers.facebook.com/docs/messenger-platform/getting-started/sample-experience](https://developers.facebook.com/docs/messenger-platform/getting-started/sample-experience)
 
 ## Tool used
+```Node v14.16.0``` and ```npm v6.14.11```, others:
 - request-promise 
 - cheerio 
 - express
 - ejs
 
 ## Screenshots
+Click on the image to view full size.
 
 Login                        | Help&nbsp;                  | Week                        | Week next                        | Today
 ---------------------------- | --------------------------- | --------------------------- | -------------------------------- | ------------------------------
