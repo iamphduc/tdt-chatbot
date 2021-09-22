@@ -1,32 +1,30 @@
-// ===== SCHEDULE MESSAGE ===== //
-function toScheduleMessage(schedule) {
-  if (schedule.length == 0) return '';
+function toScheduleMessage(scheduleArr) {
+  if (scheduleArr.length == 0) return '';
 
-  const readableSchedule = schedule.map((ele) => {
+  return scheduleArr.map((ele) => {
     return (
-      `===== ${ele.date} =====\n` +
-      (ele.note === '' ? `` : `-----> ${ele.note}\n`) +
+      (ele.note == ''
+        ? `===== ${ele.date} =====\n`
+        : `##### ${ele.date} #####\n`) +
       `Môn: ${ele.subject}\n` +
       `Tiết: ${ele.period}\n` +
       `Nhóm: ${ele.group}` +
       (ele.subGroup == 0 ? `` : `  -  Tổ: ${ele.subGroup}`) +
       `\n` +
-      `Phòng: ${ele.room}\n`
+      `Phòng: ${ele.room}\n` +
+      (ele.note == '' ? `` : `##### ${ele.note.toUpperCase()} #####\n`)
     );
   });
-
-  return readableSchedule;
 }
 
-// ===== SCORE MESSAGE ===== //
-function toScoreMessage(score) {
-  if (score.length == 0) return '';
+function toScoreMessage(scoreArr) {
+  if (!scoreArr) return '';
 
-  const readableScore = score.map((ele, i) => {
+  return scoreArr.map((ele, i) => {
     // GPA
-    if (i + 1 == score.length) {
+    if (i + 1 == scoreArr.length) {
       if (ele == null)
-        return `=======|  [ GPA ]  |=======\n` + `----->  Không có điểm \n`;
+        return `########   GPA   ########\n` + `----->  Không có điểm \n`;
 
       /*
         "ID": 507447,
@@ -40,7 +38,7 @@ function toScoreMessage(score) {
       */
 
       return (
-        `=======|  [ GPA ]  |=======\n` +
+        `########   GPA   ########\n` +
         `ĐTB học kỳ: ${ele.DTBHocKy}\n` +
         `Tín chỉ đạt: ${ele.TCDat}\n` +
         `ĐTB tích luỹ: ${ele.DTBTL}\n` +
@@ -70,7 +68,7 @@ function toScoreMessage(score) {
       "GhiChu": ""
     */
 
-    // score semester
+    // subject score
     return (
       `========|  [ ${i + 1} ]  |========\n` +
       `Môn: ${ele.TenMH.replace(
@@ -85,13 +83,10 @@ function toScoreMessage(score) {
       `Ghi chú: ${ele.GhiChu == '' ? 'không' : ele.GhiChu}\n`
     );
   });
-
-  return readableScore;
 }
 
-// ===== SCORE ALL MESSAGE ===== //
-function toScoreAllMessage(scoreAll) {
-  if (scoreAll.length == 0) return '';
+function toScoreAllMessage(scoreAllArr) {
+  if (!scoreAllArr) return '';
 
   /* 
     "MSSV": "51900790",
@@ -115,7 +110,7 @@ function toScoreAllMessage(scoreAll) {
     "GhiChu": null
   */
 
-  const readableScoreTotal = scoreAll.map((ele, i) => {
+  return scoreAllArr.map((ele, i) => {
     return (
       `========|  [ ${i + 1} ]  |========\n` +
       `Môn: ${ele.TenMH.replace(
@@ -127,11 +122,8 @@ function toScoreAllMessage(scoreAll) {
       `----->  ĐTB: ${ele.DTB}  <-----\n`
     );
   });
-
-  return readableScoreTotal;
 }
 
-// ===== HELP MESSAGE ===== //
 function toHelpMessage(scoreOptions) {
   /*
     "id":0,
@@ -140,27 +132,34 @@ function toHelpMessage(scoreOptions) {
     "TenHocKy_TA":"1st Semester/ 2021-2022"
   */
 
-  const readableScoreOptions = scoreOptions.map((ele) => {
-    return `${ele.NameTable}: ${ele.TenHocKy.replace('Học kỳ', 'HK')}`;
-  });
+  const readableScoreOptions = scoreOptions.map(
+    (ele) => `-${ele.NameTable}: ${ele.TenHocKy.replace('Học kỳ', 'HK')}`
+  );
 
   return (
-    `=======|  [ HELP ]  |=======\n` +
+    `========|  HELP  |========\n` +
+    `\n` +
     `Xem lịch học:\n` +
     `  - Tuần này: "week"\n` +
     `  - Tuần sau: "week next"\n` +
-    `  - Ngày trong tuần: "mon"\n` +
-    `    + Ví dụ: "tue" là thứ 3\n` +
-    `    + Ví dụ: "wed" là thứ 4\n` +
-    `    + Chỉ dùng 3 chữ cái đầu\n` +
     `  - Hôm nay: "today"\n` +
-    `  - Ngày mai: "tomorrow"\n\n` +
+    `  - Ngày mai: "tomorrow"\n` +
+    `  - Các ngày trong tuần: \n` +
+    `     + Sử dụng 3 chữ cái đầu\n` +
+    `     + Ví dụ: "mon" là thứ 2\n` +
+    `\n` +
     `Xem điểm:\n` +
-    `  - Điểm HK mặc định: "score"\n` +
-    `  - Điểm tổng hợp: "score all"\n\n` +
-    `Xem điểm tự chọn: "score -"\n` +
-    `  - Ví dụ: "score -Diem20191"\n` +
-    readableScoreOptions.join('\n')
+    `  - HK mặc định: "score"\n` +
+    `     + Hiện tại sẽ là: -${process.env.SEMESTER_SCORE}\n` +
+    `  - Tổng hợp: "score all"\n` +
+    `\n` +
+    `Xem điểm theo HK (2 cách):\n` +
+    `1. Sử dụng "score list"\n` +
+    `2. Sử dụng "score -NameTable"\n` +
+    `Ví dụ: "score -Diem20191"\n` +
+    `\n` +
+    `Danh sách NameTable:\n` +
+    readableScoreOptions.reverse().join('\n')
   );
 }
 
