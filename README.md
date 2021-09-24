@@ -7,7 +7,7 @@ Check [the screenshots below](#screenshots), especially **Help** and **Menu**.
 
 ### For those who clone this project
 #### *Please remember to use it responsibly*
-1. Create a ```.env``` and fill in the corresponding values.
+1. Create a ```.env```
 ```
 PAGE_ACCESS_TOKEN=
 VERIFY_TOKEN=
