@@ -67,7 +67,7 @@ class Score extends School {
       // request gpa
       console.time('GPA');
       const GPA = await rp({
-        uri: URL.gpa,
+        uri: URL.GPA,
         qs: { lop, mssv, tenBangDiem: semester, time: Date.now() },
         json: true,
       });
