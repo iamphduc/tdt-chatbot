@@ -1,21 +1,20 @@
 # TDT Chatbot
 This project is a Facebook chatbot that sends schedule and score scraped from TDTU Student Portal.
 
-## Usage
-### For those who have access to my Facebook page
+*Please remember to use it responsibly.*
+
+## Getting started
 Check [the screenshots below](#screenshots), especially **Help** and **Menu**.
 
-### For those who clone this project
-#### *Please remember to use it responsibly*
-1. Create a ```.env``` and fill in the corresponding values.
+- Create a `.env`
 ```
 PAGE_ACCESS_TOKEN=
 VERIFY_TOKEN=
 MSSV=
 PASS=
 ```
-2. Follow this guide: [https://developers.facebook.com/docs/messenger-platform/getting-started](https://developers.facebook.com/docs/messenger-platform/getting-started)
-3. Make sure to set up Semester in ```http://localhost:5000/setting``` on your first run.
+- Follow this guide: [https://developers.facebook.com/docs/messenger-platform/getting-started](https://developers.facebook.com/docs/messenger-platform/getting-started)
+- Make sure to set up Semester in `http://localhost:5000/setting` on your first run.
 
 ## Why did I do this project?
 The main purpose is to practice scraping and make a Facebook chatbot. This app also makes my student life more convenient.
@@ -23,7 +22,7 @@ The main purpose is to practice scraping and make a Facebook chatbot. This app a
 There is no harmful intention to TDTU Student Portal.
 
 ## Tool used
-```Node v14.16.0``` and ```npm v6.14.11```, worth mentioning:
+`Node v14.16.0` and `Npm v6.14.11`, worth mentioning:
 - request-promise 
 - cheerio 
 - express
@@ -34,7 +33,7 @@ Click on the image to view full size.
 
 Help                                           | Menu                        
 ---------------------------------------------- | ---------------------------- 
-<img src="screenshots/2_help.jpg" width=250 /> | <img src="screenshots/10_menu.jpg" width=250 />
+<img src="screenshots/2_help.jpg" width=230 /> | <img src="screenshots/10_menu.jpg" width=230 />
 
 Login                        | Week                        | Week next                        | Today
 ---------------------------- | --------------------------- | -------------------------------- | ------------------------------
