@@ -5,7 +5,7 @@ const School = require('./School');
 
 const URL = 'https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx';
 
-class Score extends School {
+class Schedule extends School {
   constructor() {
     super();
 
@@ -193,4 +193,4 @@ function cheerioSchedule(html) {
   return subjectList.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-module.exports = new Score();
+module.exports = new Schedule();
