@@ -1,9 +1,8 @@
-const moment = require('moment-timezone');
-
 const Handler = require('../modules/MessageHandler');
 
 const { saveInfor, getInfor, deleteInfor } = require('../utils/infor');
 const { setUpPersistentMenu, callSendAPI } = require('../utils/facebookCall');
+const timezone = require('../utils/timezone');
 
 class WebhookController {
   // [GET] ./webhook
@@ -70,7 +69,7 @@ class WebhookController {
 // Handles messages events
 async function handleMessage(sender_psid, received_message) {
   const message = received_message.text;
-  console.log(`receive: "${message}"`);
+  // console.log(`receive: "${message}"`);
 
   // Check if the message contains NO text
   if (!message)
@@ -94,13 +93,21 @@ async function handleMessage(sender_psid, received_message) {
       text: 'Đã ghi nhận thông tin của bạn. Nhớ thu hồi tin nhắn để bảo mật nhé!',
     });
     sendHelpButton(sender_psid);
-  } else if (lower == 'logout') {
+  }
+
+  // User logs out
+  else if (lower == 'logout') {
     deleteInfor(sender_psid);
     callSendAPI(sender_psid, { text: 'Thông tin của bạn đã được xoá' });
   }
-  // Check if user logged
+
+  // Check if user logged in
   else if (mssv && pass) categorizeMessage(sender_psid, mssv, pass, message);
-  else callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${message}"` });
+  // User haven't logged in
+  else {
+    callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${message}"` });
+    callSendAPI(sender_psid, { text: `Bạn chưa đăng nhập!` });
+  }
 }
 
 // Handles postback events
@@ -146,7 +153,6 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
   if (lower in MESSAGE_HANDLER)
     return MESSAGE_HANDLER[lower](sender_psid, mssv, pass);
 
-  const TODAY = moment().tz('Asia/Ho_Chi_Minh').format('DD');
   const WEEKDAY = {
     mon: 'Thứ 2',
     tue: 'Thứ 3',
@@ -155,8 +161,8 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
     fri: 'Thứ 6',
     sat: 'Thứ 7',
     sun: 'CN',
-    today: TODAY,
-    tomorrow: +TODAY + 1,
+    today: timezone.TODAY,
+    tomorrow: timezone.TOMORROW,
   };
 
   if (lower in WEEKDAY)

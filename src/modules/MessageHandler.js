@@ -1,5 +1,3 @@
-const moment = require('moment-timezone');
-
 const Schedule = require('./Schedule');
 const Score = require('./Score');
 
@@ -14,6 +12,7 @@ const {
   toScoreAllMessage,
   toHelpMessage,
 } = require('../utils/message');
+const timezone = require('../utils/timezone');
 
 class MessageHandler {
   async handleHelp(sender_psid, mssv, pass) {
@@ -71,8 +70,10 @@ class MessageHandler {
 
   async handleWeekday(sender_psid, mssv, pass, date) {
     try {
-      const today = moment().tz('Asia/Ho_Chi_Minh').format('DD');
-      const notWeekday = { [today]: 'Hôm nay', [+today + 1]: 'Ngày mai' };
+      const notWeekday = {
+        [timezone.TODAY]: 'Hôm nay',
+        [timezone.TOMORROW]: 'Ngày mai',
+      };
       const dateText = date in notWeekday ? notWeekday[date] : date;
 
       callSendAPI(sender_psid, {
