@@ -71,9 +71,7 @@ async function handleMessage(sender_psid, received_message) {
   const message = received_message.text;
   // console.log(`receive: "${message}"`);
 
-  // Check if the message contains NO text
-  if (!message)
-    return callSendAPI(sender_psid, { text: 'Like cái đầu * nhà bạn' });
+  if (!message) return callSendAPI(sender_psid, { text: 'What ???????' });
 
   const lower = message.toLowerCase();
   const { mssv, pass } = getInfor(sender_psid);
@@ -101,17 +99,16 @@ async function handleMessage(sender_psid, received_message) {
     callSendAPI(sender_psid, { text: 'Thông tin của bạn đã được xoá' });
   }
 
-  // Check if user logged in
+  // User logged in
   else if (mssv && pass) categorizeMessage(sender_psid, mssv, pass, message);
-  // User haven't logged in
   else {
-    callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${message}"` });
+    await callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${message}"` });
     callSendAPI(sender_psid, { text: `Bạn chưa đăng nhập!` });
   }
 }
 
 // Handles postback events
-function handlePostback(sender_psid, received_postback) {
+async function handlePostback(sender_psid, received_postback) {
   const payload = received_postback.payload;
 
   if (payload === 'GET_STARTED')
@@ -120,17 +117,22 @@ function handlePostback(sender_psid, received_postback) {
     });
 
   const { mssv, pass } = getInfor(sender_psid);
+
+  // User logged in
   if (mssv && pass) categorizeMessage(sender_psid, mssv, pass, payload);
-  else callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${payload}"` });
+  else {
+    await callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${payload}"` });
+    callSendAPI(sender_psid, { text: `Bạn chưa đăng nhập!` });
+  }
 }
 
 // ====================================== //
 // ========== SUPPORT FUNCTION ========== //
-// ====================================== //
 
 // Check if login input is valid
 function checkLoginInput(mssvInput, passInput) {
   if (mssvInput.length < 8 || passInput.length < 1) return false;
+
   // MSSV contains alphanumeric character only
   if (!/^[A-Za-z0-9]+$/.test(mssvInput)) return false;
 
