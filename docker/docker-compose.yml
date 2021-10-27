@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  node:
+    image: iamphduc/tdt-chatbot
+    container_name: tdt-chatbot
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.node
+    env_file: ../.env
+    ports:
+      - 5000:5000

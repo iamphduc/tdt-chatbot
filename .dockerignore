@@ -1,0 +1,19 @@
+# Dependency directory
+node_modules
+
+# Environment variable
+.env
+
+# Git file
+.git
+.gitignore
+
+# Screenshot file
+screenshots
+
+# Documentation
+*.md
+
+# Misc
+page-access.txt
+.prettierrc
