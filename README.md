@@ -22,7 +22,7 @@ The main purpose is to practice scraping and make a Facebook chatbot. This app a
 There is no harmful intention to TDTU Student Portal.
 
 ## Tool used
-`Node v14.16.0` and `Npm v6.14.11`, worth mentioning:
+`Node v14.16.0` and `Npm v7.24.1`, worth mentioning:
 - request-promise 
 - cheerio 
 - express
