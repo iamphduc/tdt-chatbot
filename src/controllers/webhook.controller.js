@@ -1,8 +1,8 @@
-const Handler = require('../modules/MessageHandler');
+const Handler = require("../modules/MessageHandler");
 
-const { saveInfor, getInfor, deleteInfor } = require('../utils/infor');
-const { setUpPersistentMenu, callSendAPI } = require('../utils/facebookCall');
-const timezone = require('../utils/timezone');
+const { saveInfor, getInfor, deleteInfor } = require("../utils/infor");
+const { setUpPersistentMenu, callSendAPI } = require("../utils/facebookCall");
+const timezone = require("../utils/timezone");
 
 class WebhookController {
   // [GET] ./webhook
@@ -11,15 +11,15 @@ class WebhookController {
     let VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
     // Parse the query params
-    let mode = req.query['hub.mode'];
-    let token = req.query['hub.verify_token'];
-    let challenge = req.query['hub.challenge'];
+    let mode = req.query["hub.mode"];
+    let token = req.query["hub.verify_token"];
+    let challenge = req.query["hub.challenge"];
 
     if (mode && token) {
       // Checks the mode and token sent is correct
-      if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+      if (mode === "subscribe" && token === VERIFY_TOKEN) {
         // Responds with the challenge token from the request
-        console.log('WEBHOOK_VERIFIED');
+        console.log("WEBHOOK_VERIFIED");
 
         // Set up persistent menu
         setUpPersistentMenu();
@@ -37,7 +37,7 @@ class WebhookController {
     let body = req.body;
 
     // Checks this is an event from a page subscription
-    if (body.object === 'page') {
+    if (body.object === "page") {
       // Iterates over each entry - there may be multiple if batched
       body.entry.forEach(function (entry) {
         // Gets the message. entry.messaging is an array, but
@@ -46,7 +46,7 @@ class WebhookController {
 
         // Get the sender PSID
         let sender_psid = webhook_event.sender.id;
-        console.log('\nSender PSID: ' + sender_psid);
+        console.log("\nSender PSID: " + sender_psid);
 
         // Check if the event is a message
         if (webhook_event.message) {
@@ -58,7 +58,7 @@ class WebhookController {
       });
 
       // Returns a '200 OK' response to all requests
-      res.status(200).send('EVENT_RECEIVED');
+      res.status(200).send("EVENT_RECEIVED");
     } else {
       // Returns a '404 Not Found' if event is not from a page subscription
       res.sendStatus(404);
@@ -71,32 +71,32 @@ async function handleMessage(sender_psid, received_message) {
   const message = received_message.text;
   // console.log(`receive: "${message}"`);
 
-  if (!message) return callSendAPI(sender_psid, { text: 'What ???????' });
+  if (!message) return callSendAPI(sender_psid, { text: "What ???????" });
 
   const lower = message.toLowerCase();
   const { mssv, pass } = getInfor(sender_psid);
 
-  if (lower.includes('login ')) {
+  if (lower.includes("login ")) {
     const mssvInput = message.slice(6, 6 + 8);
     const passInput = message.slice(6 + 8 + 1);
 
     if (!checkLoginInput(mssvInput, passInput))
       return callSendAPI(sender_psid, {
-        text: 'Thông tin của bạn không hợp lệ',
+        text: "Thông tin của bạn không hợp lệ",
       });
 
     saveInfor(sender_psid, mssvInput, passInput);
 
     await callSendAPI(sender_psid, {
-      text: 'Đã ghi nhận thông tin của bạn. Nhớ thu hồi tin nhắn để bảo mật nhé!',
+      text: "Đã ghi nhận thông tin của bạn. Nhớ thu hồi tin nhắn để bảo mật nhé!",
     });
     sendHelpButton(sender_psid);
   }
 
   // User logs out
-  else if (lower == 'logout') {
+  else if (lower == "logout") {
     deleteInfor(sender_psid);
-    callSendAPI(sender_psid, { text: 'Thông tin của bạn đã được xoá' });
+    callSendAPI(sender_psid, { text: "Thông tin của bạn đã được xoá" });
   }
 
   // User logged in
@@ -111,7 +111,7 @@ async function handleMessage(sender_psid, received_message) {
 async function handlePostback(sender_psid, received_postback) {
   const payload = received_postback.payload;
 
-  if (payload === 'GET_STARTED')
+  if (payload === "GET_STARTED")
     return callSendAPI(sender_psid, {
       text: `Chào mừng bạn đến với chatbot của Đức Phạm 😎`,
     });
@@ -144,34 +144,31 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
   const lower = message.toLowerCase();
 
   const MESSAGE_HANDLER = {
-    'help': Handler.handleHelp,
-    'week': Handler.handleWeek,
-    'week next': Handler.handleWeekNext,
-    'score': Handler.handleScore,
-    'score all': Handler.handleScoreAll,
-    'score list': Handler.handleScoreList,
+    "help": Handler.handleHelp,
+    "week": Handler.handleWeek,
+    "week next": Handler.handleWeekNext,
+    "score": Handler.handleScore,
+    "score all": Handler.handleScoreAll,
+    "score list": Handler.handleScoreList,
   };
 
-  if (lower in MESSAGE_HANDLER)
-    return MESSAGE_HANDLER[lower](sender_psid, mssv, pass);
+  if (lower in MESSAGE_HANDLER) return MESSAGE_HANDLER[lower](sender_psid, mssv, pass);
 
   const WEEKDAY = {
-    mon: 'Thứ 2',
-    tue: 'Thứ 3',
-    wed: 'Thứ 4',
-    thu: 'Thứ 5',
-    fri: 'Thứ 6',
-    sat: 'Thứ 7',
-    sun: 'CN',
+    mon: "Thứ 2",
+    tue: "Thứ 3",
+    wed: "Thứ 4",
+    thu: "Thứ 5",
+    fri: "Thứ 6",
+    sat: "Thứ 7",
+    sun: "CN",
     today: timezone.TODAY,
     tomorrow: timezone.TOMORROW,
   };
 
-  if (lower in WEEKDAY)
-    return Handler.handleWeekday(sender_psid, mssv, pass, WEEKDAY[lower]);
+  if (lower in WEEKDAY) return Handler.handleWeekday(sender_psid, mssv, pass, WEEKDAY[lower]);
 
-  if (lower.includes('score -'))
-    return Handler.handleScoreCustom(sender_psid, mssv, pass, message);
+  if (lower.includes("score -")) return Handler.handleScoreCustom(sender_psid, mssv, pass, message);
 
   // default or wrong message
   await callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${message}"` });
@@ -182,15 +179,15 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
 async function sendHelpButton(sender_psid) {
   await callSendAPI(sender_psid, {
     attachment: {
-      type: 'template',
+      type: "template",
       payload: {
-        template_type: 'button',
+        template_type: "button",
         text: 'Nhắn "help" hoặc nhấn nút dưới đây để xem hướng dẫn!',
         buttons: [
           {
-            type: 'postback',
-            title: 'Help',
-            payload: 'Help',
+            type: "postback",
+            title: "Help",
+            payload: "Help",
           },
         ],
       },

@@ -1,8 +1,8 @@
-import dotenv from 'dotenv';
-import express from 'express';
+import dotenv from "dotenv";
+import express from "express";
 
-const router = require('./routes/index.routes');
-const viewEngine = require('./configs/viewEngine');
+const router = require("./routes/index.routes");
+const viewEngine = require("./configs/viewEngine");
 
 dotenv.config();
 const app = express();

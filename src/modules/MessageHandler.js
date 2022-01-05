@@ -1,18 +1,15 @@
-const Schedule = require('./Schedule');
-const Score = require('./Score');
+const Schedule = require("./Schedule");
+const Score = require("./Score");
 
-const { callSendAPI, callMultipleSendAPI } = require('../utils/facebookCall');
-const {
-  createQuickReplies,
-  createScoreListElements,
-} = require('../utils/postback');
+const { callSendAPI, callMultipleSendAPI } = require("../utils/facebookCall");
+const { createQuickReplies, createScoreListElements } = require("../utils/postback");
 const {
   toScheduleMessage,
   toScoreMessage,
   toScoreAllMessage,
   toHelpMessage,
-} = require('../utils/message');
-const timezone = require('../utils/timezone');
+} = require("../utils/message");
+const timezone = require("../utils/timezone");
 
 class MessageHandler {
   async handleHelp(sender_psid, mssv, pass) {
@@ -23,13 +20,13 @@ class MessageHandler {
       callSendAPI(sender_psid, {
         text: helpMessage,
         quick_replies: createQuickReplies([
-          'week',
-          'week next',
-          'today',
-          'tomorrow',
-          'score',
-          'score all',
-          'score list',
+          "week",
+          "week next",
+          "today",
+          "tomorrow",
+          "score",
+          "score all",
+          "score list",
           `score -${process.env.SEMESTER_SCORE}`,
         ]),
       });
@@ -40,14 +37,14 @@ class MessageHandler {
 
   async handleWeek(sender_psid, mssv, pass) {
     try {
-      callSendAPI(sender_psid, { text: 'Đợi mình lấy TKB tuần này nhé!' });
+      callSendAPI(sender_psid, { text: "Đợi mình lấy TKB tuần này nhé!" });
 
       const data = await Schedule.getSchedule(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const weekMessage = toScheduleMessage(data);
       if (weekMessage) callMultipleSendAPI(sender_psid, weekMessage, 5);
-      else callSendAPI(sender_psid, { text: 'Tuần này không có lịch học' });
+      else callSendAPI(sender_psid, { text: "Tuần này không có lịch học" });
     } catch (error) {
       console.log(error);
     }
@@ -55,14 +52,14 @@ class MessageHandler {
 
   async handleWeekNext(sender_psid, mssv, pass) {
     try {
-      callSendAPI(sender_psid, { text: 'Đợi mình lấy TKB tuần sau nhé!' });
+      callSendAPI(sender_psid, { text: "Đợi mình lấy TKB tuần sau nhé!" });
 
       const data = await Schedule.getSchedule(mssv, pass, true);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const weekNextMessage = toScheduleMessage(data);
       if (weekNextMessage) callMultipleSendAPI(sender_psid, weekNextMessage, 5);
-      else callSendAPI(sender_psid, { text: 'Tuần sau không có lịch học' });
+      else callSendAPI(sender_psid, { text: "Tuần sau không có lịch học" });
     } catch (error) {
       console.log(error);
     }
@@ -71,25 +68,20 @@ class MessageHandler {
   async handleWeekday(sender_psid, mssv, pass, date) {
     try {
       const notWeekday = {
-        [timezone.TODAY]: 'Hôm nay',
-        [timezone.TOMORROW]: 'Ngày mai',
+        [timezone.TODAY]: "Hôm nay",
+        [timezone.TOMORROW]: "Ngày mai",
       };
       const dateText = date in notWeekday ? notWeekday[date] : date;
 
       callSendAPI(sender_psid, {
-        text: `Đợi mình lấy TKB ${
-          dateText == 'CN' ? dateText : dateText.toLowerCase()
-        } nhé!`,
+        text: `Đợi mình lấy TKB ${dateText == "CN" ? dateText : dateText.toLowerCase()} nhé!`,
       });
 
       const data = await Schedule.getSchedule(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
-      const dateMessage = toScheduleMessage(
-        data.filter((ele) => ele.date.includes(date))
-      );
-      if (dateMessage)
-        callSendAPI(sender_psid, { text: dateMessage.join('\n') });
+      const dateMessage = toScheduleMessage(data.filter((ele) => ele.date.includes(date)));
+      if (dateMessage) callSendAPI(sender_psid, { text: dateMessage.join("\n") });
       else callSendAPI(sender_psid, { text: `${dateText} không có lịch học` });
     } catch (error) {
       console.log(error);
@@ -98,10 +90,7 @@ class MessageHandler {
 
   async handleScore(sender_psid, mssv, pass) {
     try {
-      const semesterName = findScoreSemesterName(
-        sender_psid,
-        process.env.SEMESTER_SCORE
-      );
+      const semesterName = findScoreSemesterName(sender_psid, process.env.SEMESTER_SCORE);
 
       callSendAPI(sender_psid, {
         text: `Đợi mình lấy điểm ${semesterName} nhé!`,
@@ -123,15 +112,14 @@ class MessageHandler {
 
   async handleScoreAll(sender_psid, mssv, pass) {
     try {
-      callSendAPI(sender_psid, { text: 'Đợi mình lấy điểm tổng hợp nhé!' });
+      callSendAPI(sender_psid, { text: "Đợi mình lấy điểm tổng hợp nhé!" });
 
       const data = await Score.getScoreAll(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const scoreAllMessage = await toScoreAllMessage(data);
       if (scoreAllMessage) callMultipleSendAPI(sender_psid, scoreAllMessage);
-      else
-        callSendAPI(sender_psid, { text: `Không tìm thấy bảng điểm tổng hợp` });
+      else callSendAPI(sender_psid, { text: `Không tìm thấy bảng điểm tổng hợp` });
     } catch (error) {
       console.log(error);
     }
@@ -143,9 +131,9 @@ class MessageHandler {
 
       await callSendAPI(sender_psid, {
         attachment: {
-          type: 'template',
+          type: "template",
           payload: {
-            template_type: 'generic',
+            template_type: "generic",
             elements: createScoreListElements(scoreOptions),
           },
         },
@@ -182,7 +170,7 @@ class MessageHandler {
 
 // Check if login was successfull
 function isLoginSuccessful(sender_psid, data) {
-  if (data != 'Login failed') return true;
+  if (data != "Login failed") return true;
 
   callSendAPI(sender_psid, { text: `Không thể đăng nhập vào cổng sinh viên` });
   return false;
@@ -196,10 +184,8 @@ function findScoreSemesterName(sender_psid, semester) {
   // Check if invalid NameTable for score custom
   if (!foundSemester) {
     callSendAPI(sender_psid, {
-      text: 'Bảng điểm không hợp lệ',
-      quick_replies: createQuickReplies(
-        scoreOptions.map((ele) => `score -${ele.NameTable}`)
-      ),
+      text: "Bảng điểm không hợp lệ",
+      quick_replies: createQuickReplies(scoreOptions.map((ele) => `score -${ele.NameTable}`)),
     });
 
     return false;

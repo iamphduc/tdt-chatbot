@@ -1,5 +1,5 @@
-const Schedule = require('../modules/Schedule');
-const Score = require('../modules/Score');
+const Schedule = require("../modules/Schedule");
+const Score = require("../modules/Score");
 
 class SettingController {
   // [GET] /setting
@@ -15,17 +15,12 @@ class SettingController {
       const defaultSchedule = scheduleOptions.find((ele) => ele.isSelected);
       const defaultScore = scoreOptions[0];
 
-      const { SCHEDULE: configSchedule, SCORE: configScore } = CONFIG
-        ? JSON.parse(CONFIG)
-        : {};
+      const { SCHEDULE: configSchedule, SCORE: configScore } = CONFIG ? JSON.parse(CONFIG) : {};
 
-      setSemester(
-        configSchedule || defaultSchedule.value,
-        configScore || defaultScore.NameTable
-      );
+      setSemester(configSchedule || defaultSchedule.value, configScore || defaultScore.NameTable);
       console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
 
-      return res.render('setting', {
+      return res.render("setting", {
         scheduleOptions,
         scoreOptions,
         configSchedule,
@@ -46,10 +41,10 @@ class SettingController {
     });
 
     setSemester(configSchedule, configScore);
-    console.log('SETTING_SUCCESS');
+    console.log("SETTING_SUCCESS");
     console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
 
-    return res.status(200).json({ message: 'success' });
+    return res.status(200).json({ message: "success" });
   }
 }
 

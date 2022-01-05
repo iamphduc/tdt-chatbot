@@ -1,30 +1,27 @@
 function toScheduleMessage(scheduleArr) {
-  if (scheduleArr.length == 0) return '';
+  if (scheduleArr.length == 0) return "";
 
   return scheduleArr.map((ele) => {
     return (
-      (ele.note == ''
-        ? `===== ${ele.date} =====\n`
-        : `##### ${ele.date} #####\n`) +
+      (ele.note == "" ? `===== ${ele.date} =====\n` : `##### ${ele.date} #####\n`) +
       `Môn: ${ele.subject}\n` +
       `Tiết: ${ele.period}\n` +
       `Nhóm: ${ele.group}` +
       (ele.subGroup == 0 ? `` : `  -  Tổ: ${ele.subGroup}`) +
       `\n` +
       `Phòng: ${ele.room}\n` +
-      (ele.note == '' ? `` : `##### ${ele.note.toUpperCase()} #####\n`)
+      (ele.note == "" ? `` : `##### ${ele.note.toUpperCase()} #####\n`)
     );
   });
 }
 
 function toScoreMessage(scoreArr) {
-  if (!scoreArr) return '';
+  if (!scoreArr) return "";
 
   return scoreArr.map((ele, i) => {
     // GPA
     if (i + 1 == scoreArr.length) {
-      if (ele == null)
-        return `########   GPA   ########\n` + `----->  Không có điểm \n`;
+      if (ele == null) return `########   GPA   ########\n` + `----->  Không có điểm \n`;
 
       /*
         "ID": 507447,
@@ -72,21 +69,21 @@ function toScoreMessage(scoreArr) {
     return (
       `========|  [ ${i + 1} ]  |========\n` +
       `Môn: ${ele.TenMH.replace(
-        'Những kỹ năng thiết yếu cho sự phát triển bền vững - ',
-        ''
-      ).replace('Công nghệ thông tin', 'CNTT')}\n` +
+        "Những kỹ năng thiết yếu cho sự phát triển bền vững - ",
+        ""
+      ).replace("Công nghệ thông tin", "CNTT")}\n` +
       `Mã môn: ${ele.MonHocID}\n` +
       `Nhóm: ${ele.Nhom_To}  |  Tín chỉ: ${ele.SoTC}\n` +
       `QT_1: ${ele.Diem1}  -  QT_2: ${ele.Diem1_1}\n` +
       `Giữa kỳ: ${ele.Diem2}  -  Cuối kỳ: ${ele.DiemThi1}\n` +
       `----->  ĐTB: ${ele.DTB}  <-----\n` +
-      `Ghi chú: ${ele.GhiChu == '' ? 'không' : ele.GhiChu}\n`
+      `Ghi chú: ${ele.GhiChu == "" ? "không" : ele.GhiChu}\n`
     );
   });
 }
 
 function toScoreAllMessage(scoreAllArr) {
-  if (!scoreAllArr) return '';
+  if (!scoreAllArr) return "";
 
   /* 
     "MSSV": "51900790",
@@ -114,9 +111,9 @@ function toScoreAllMessage(scoreAllArr) {
     return (
       `========|  [ ${i + 1} ]  |========\n` +
       `Môn: ${ele.TenMH.replace(
-        'Những kỹ năng thiết yếu cho sự phát triển bền vững - ',
-        ''
-      ).replace('Công nghệ thông tin', 'CNTT')}\n` +
+        "Những kỹ năng thiết yếu cho sự phát triển bền vững - ",
+        ""
+      ).replace("Công nghệ thông tin", "CNTT")}\n` +
       `Mã môn: ${ele.MonHocID}\n` +
       `Tín chỉ: ${ele.SoTC}\n` +
       `----->  ĐTB: ${ele.DTB}  <-----\n`
@@ -133,7 +130,7 @@ function toHelpMessage(scoreOptions) {
   */
 
   const readableScoreOptions = scoreOptions.map(
-    (ele) => `-${ele.NameTable}: ${ele.TenHocKy.replace('Học kỳ', 'HK')}`
+    (ele) => `-${ele.NameTable}: ${ele.TenHocKy.replace("Học kỳ", "HK")}`
   );
 
   return (
@@ -159,7 +156,7 @@ function toHelpMessage(scoreOptions) {
     `Ví dụ: "score -Diem20191"\n` +
     `\n` +
     `Danh sách NameTable:\n` +
-    readableScoreOptions.reverse().join('\n')
+    readableScoreOptions.reverse().join("\n")
   );
 }
 

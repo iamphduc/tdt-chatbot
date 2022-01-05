@@ -1,7 +1,7 @@
-require('dotenv').config();
+require("dotenv").config();
 
-const Schedule = require('../modules/Schedule');
-const Score = require('../modules/Score');
+const Schedule = require("../modules/Schedule");
+const Score = require("../modules/Score");
 
 class ApiController {
   // [POST] /api/week

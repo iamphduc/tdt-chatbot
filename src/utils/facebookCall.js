@@ -1,42 +1,42 @@
-const request = require('request'); // for facebook API request
+const request = require("request"); // for facebook API request
 
 function setUpPersistentMenu() {
   const menu_body = {
-    get_started: { payload: 'GET_STARTED' },
+    get_started: { payload: "GET_STARTED" },
     persistent_menu: [
       {
-        locale: 'default',
+        locale: "default",
         composer_input_disabled: false,
         call_to_actions: [
           {
-            title: 'TKB tuần này',
-            type: 'postback',
-            payload: 'week',
+            title: "TKB tuần này",
+            type: "postback",
+            payload: "week",
           },
           {
-            title: 'TKB tuần sau',
-            type: 'postback',
-            payload: 'week next',
+            title: "TKB tuần sau",
+            type: "postback",
+            payload: "week next",
           },
           {
-            title: 'TKB hôm nay',
-            type: 'postback',
-            payload: 'today',
+            title: "TKB hôm nay",
+            type: "postback",
+            payload: "today",
           },
           {
-            title: 'TKB ngày mai',
-            type: 'postback',
-            payload: 'tomorrow',
+            title: "TKB ngày mai",
+            type: "postback",
+            payload: "tomorrow",
           },
           {
-            title: 'Danh sách điểm học kỳ',
-            type: 'postback',
-            payload: 'score list',
+            title: "Danh sách điểm học kỳ",
+            type: "postback",
+            payload: "score list",
           },
           {
-            title: 'Điểm tổng hợp',
-            type: 'postback',
-            payload: 'score all',
+            title: "Điểm tổng hợp",
+            type: "postback",
+            payload: "score all",
           },
         ],
       },
@@ -46,17 +46,17 @@ function setUpPersistentMenu() {
   return new Promise((resolve, reject) => {
     request(
       {
-        url: 'https://graph.facebook.com/v12.0/me/messenger_profile',
+        url: "https://graph.facebook.com/v12.0/me/messenger_profile",
         qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
-        method: 'POST',
+        method: "POST",
         json: menu_body,
       },
       (err, res, body) => {
         if (!err) {
-          console.log('Set up persistent menu!');
+          console.log("Set up persistent menu!");
           resolve();
         } else {
-          console.error('Unable to send message:' + err);
+          console.error("Unable to send message:" + err);
           reject();
         }
       }
@@ -76,17 +76,17 @@ function callSendAPI(sender_psid, response) {
     // Send the HTTP request to the Messenger Platform
     request(
       {
-        uri: 'https://graph.facebook.com/v2.6/me/messages',
+        uri: "https://graph.facebook.com/v2.6/me/messages",
         qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
-        method: 'POST',
+        method: "POST",
         json: request_body,
       },
       (err, res, body) => {
         if (!err) {
-          console.log('Message sent!');
+          console.log("Message sent!");
           resolve();
         } else {
-          console.error('Unable to send message:' + err);
+          console.error("Unable to send message:" + err);
           reject();
         }
       }
@@ -107,7 +107,7 @@ async function callMultipleSendAPI(sender_psid, message, itemPerMessage = 8) {
       const lastIdx = itemPerMessage * (i + 1);
 
       await callSendAPI(sender_psid, {
-        text: message.slice(firstIdx, lastIdx).join('\n'),
+        text: message.slice(firstIdx, lastIdx).join("\n"),
       });
     }
   } catch (err) {
