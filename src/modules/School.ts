@@ -1,8 +1,10 @@
 let rp = require('request-promise');
 
-const URL = 'https://stdportal.tdtu.edu.vn/Login/SignIn';
+const LOGIN_URL = 'https://stdportal.tdtu.edu.vn/Login/SignIn';
 
 class School {
+  jar: any;
+
   constructor() {
     this.jar = rp.jar();
 
@@ -15,7 +17,7 @@ class School {
     });
   }
 
-  async login(user, pass) {
+  async login(user: string, pass: string): Promise<boolean> {
     try {
       console.log('========== REQUEST ==========');
 
@@ -36,12 +38,13 @@ class School {
 
       return true;
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      throw error;
     }
   }
 }
 
-function setAuthCookie(jar, token) {
+function setAuthCookie(jar: any, token: string): void {
   const date = new Date(
     86400000 + 1000 * 60 * 30 + +new Date()
   ).toLocaleString();
