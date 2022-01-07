@@ -1,12 +1,12 @@
-function createQuickReplies(replies) {
-  return replies.map((ele) => ({
+export function createQuickReplies(replies: any) {
+  return replies.map((ele: any) => ({
     content_type: "text",
     title: ele,
     payload: "<POSTBACK_PAYLOAD>",
   }));
 }
 
-function createScoreListElements(options) {
+export function createScoreListElements(options: any) {
   const elements = [];
   for (let i = 0; i < options.length; i += 3) {
     elements.push({
@@ -18,15 +18,10 @@ function createScoreListElements(options) {
   return elements;
 }
 
-function createScoreListButtons(buttons) {
-  return buttons.map((ele) => ({
+function createScoreListButtons(buttons: any) {
+  return buttons.map((ele: any) => ({
     type: "postback",
     title: ele.TenHocKy,
     payload: `score -${ele.NameTable}`,
   }));
 }
-
-module.exports = {
-  createQuickReplies,
-  createScoreListElements,
-};

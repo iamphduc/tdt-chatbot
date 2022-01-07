@@ -1,9 +1,15 @@
-const webhookController = require("../controllers/webhook.controller");
-const apiController = require("../controllers/api.controller");
-const settingController = require("../controllers/setting.controller");
+import { Application } from "express";
 
-const route = (app) => {
-  // webhook for facebook chatbot
+import { WebhookController } from "src/controllers/webhook.controller";
+import { ApiController } from "src/controllers/api.controller";
+import { SettingController } from "src/controllers/setting.controller";
+
+const webhookController = new WebhookController();
+const apiController = new ApiController();
+const settingController = new SettingController();
+
+export const route = (app: Application) => {
+  // webhook
   app.get("/webhook", webhookController.connect);
   app.post("/webhook", webhookController.handle);
 
@@ -19,5 +25,3 @@ const route = (app) => {
 
   app.get("/", (req, res) => res.sendStatus(404));
 };
-
-module.exports = route;

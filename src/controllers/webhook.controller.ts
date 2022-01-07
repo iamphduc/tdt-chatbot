@@ -1,12 +1,18 @@
-const Handler = require("../modules/MessageHandler");
+import { Request, Response } from "express";
 
-const { saveInfor, getInfor, deleteInfor } = require("../utils/infor");
-const { setUpPersistentMenu, callSendAPI } = require("../utils/facebookCall");
-const timezone = require("../utils/timezone");
+import { MessageHandler } from "src/modules/MessageHandler";
+import { saveInfor, getInfor, deleteInfor } from "src/utils/infor";
+import { setUpPersistentMenu, callSendAPI } from "src/utils/facebookCall";
+import timezone from "src/utils/timezone";
 
-class WebhookController {
-  // [GET] ./webhook
-  connect(req, res) {
+export class WebhookController {
+  constructor() {
+    this.connect = this.connect.bind(this);
+    this.handle = this.handle.bind(this);
+  }
+
+  // [GET] /webhook
+  connect(req: Request, res: Response) {
     // Your verify token. Should be a random string.
     let VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
@@ -32,14 +38,14 @@ class WebhookController {
     }
   }
 
-  // [POST] ./webhook
-  handle(req, res) {
+  // [POST] /webhook
+  handle(req: Request, res: Response) {
     let body = req.body;
 
     // Checks this is an event from a page subscription
     if (body.object === "page") {
       // Iterates over each entry - there may be multiple if batched
-      body.entry.forEach(function (entry) {
+      body.entry.forEach(function (entry: any) {
         // Gets the message. entry.messaging is an array, but
         // will only ever contain one message, so we get index 0
         let webhook_event = entry.messaging[0];
@@ -67,7 +73,7 @@ class WebhookController {
 }
 
 // Handles messages events
-async function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid: any, received_message: any) {
   const message = received_message.text;
   // console.log(`receive: "${message}"`);
 
@@ -108,7 +114,7 @@ async function handleMessage(sender_psid, received_message) {
 }
 
 // Handles postback events
-async function handlePostback(sender_psid, received_postback) {
+async function handlePostback(sender_psid: string, received_postback: any) {
   const payload = received_postback.payload;
 
   if (payload === "GET_STARTED")
@@ -130,7 +136,7 @@ async function handlePostback(sender_psid, received_postback) {
 // ========== SUPPORT FUNCTION ========== //
 
 // Check if login input is valid
-function checkLoginInput(mssvInput, passInput) {
+function checkLoginInput(mssvInput: string, passInput: string) {
   if (mssvInput.length < 8 || passInput.length < 1) return false;
 
   // MSSV contains alphanumeric character only
@@ -140,21 +146,22 @@ function checkLoginInput(mssvInput, passInput) {
 }
 
 // Reply to predefined messages if users have logged in
-async function categorizeMessage(sender_psid, mssv, pass, message) {
+async function categorizeMessage(sender_psid: string, mssv: string, pass: string, message: string) {
   const lower = message.toLowerCase();
 
-  const MESSAGE_HANDLER = {
-    "help": Handler.handleHelp,
-    "week": Handler.handleWeek,
-    "week next": Handler.handleWeekNext,
-    "score": Handler.handleScore,
-    "score all": Handler.handleScoreAll,
-    "score list": Handler.handleScoreList,
+  const messageHandler = new MessageHandler();
+  const MESSAGE_HANDLER: { [key: string]: any } = {
+    "help": messageHandler.handleHelp,
+    "week": messageHandler.handleWeek,
+    "week next": messageHandler.handleWeekNext,
+    "score": messageHandler.handleScore,
+    "score all": messageHandler.handleScoreAll,
+    "score list": messageHandler.handleScoreList,
   };
 
   if (lower in MESSAGE_HANDLER) return MESSAGE_HANDLER[lower](sender_psid, mssv, pass);
 
-  const WEEKDAY = {
+  const WEEKDAY: { [key: string]: any } = {
     mon: "Thứ 2",
     tue: "Thứ 3",
     wed: "Thứ 4",
@@ -166,9 +173,11 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
     tomorrow: timezone.TOMORROW,
   };
 
-  if (lower in WEEKDAY) return Handler.handleWeekday(sender_psid, mssv, pass, WEEKDAY[lower]);
+  if (lower in WEEKDAY)
+    return messageHandler.handleWeekday(sender_psid, mssv, pass, WEEKDAY[lower]);
 
-  if (lower.includes("score -")) return Handler.handleScoreCustom(sender_psid, mssv, pass, message);
+  if (lower.includes("score -"))
+    return messageHandler.handleScoreCustom(sender_psid, mssv, pass, message);
 
   // default or wrong message
   await callSendAPI(sender_psid, { text: `Bạn vừa gửi: "${message}"` });
@@ -176,7 +185,7 @@ async function categorizeMessage(sender_psid, mssv, pass, message) {
 }
 
 // Send custom Help message which have Help button
-async function sendHelpButton(sender_psid) {
+async function sendHelpButton(sender_psid: string) {
   await callSendAPI(sender_psid, {
     attachment: {
       type: "template",
@@ -194,5 +203,3 @@ async function sendHelpButton(sender_psid) {
     },
   });
 }
-
-module.exports = new WebhookController();

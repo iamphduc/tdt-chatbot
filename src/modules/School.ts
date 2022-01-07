@@ -1,14 +1,14 @@
-let rp = require("request-promise");
+import rp from "request-promise";
 
 const LOGIN_URL = "https://stdportal.tdtu.edu.vn/Login/SignIn";
 
-class School {
+export class School {
   jar: any;
+  rp: any;
 
   constructor() {
     this.jar = rp.jar();
-
-    rp = rp.defaults({
+    this.rp = rp.defaults({
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
@@ -17,14 +17,14 @@ class School {
     });
   }
 
-  async login(user: string, pass: string): Promise<boolean> {
+  async login(user: string, pass: string) {
     try {
       console.log("========== REQUEST ==========");
 
       console.time("Login");
-      const { url, result } = await rp({
+      const { url, result } = await this.rp({
         method: "POST",
-        uri: URL,
+        uri: LOGIN_URL,
         formData: { user, pass },
         json: true,
       });
@@ -39,12 +39,11 @@ class School {
       return true;
     } catch (error) {
       console.error(error);
-      throw error;
     }
   }
 }
 
-function setAuthCookie(jar: any, token: string): void {
+function setAuthCookie(jar: any, token: string) {
   const date = new Date(86400000 + 1000 * 60 * 30 + +new Date()).toLocaleString();
 
   jar.setCookie(
@@ -52,5 +51,3 @@ function setAuthCookie(jar: any, token: string): void {
     "http://sso.tdt.edu.vn/Authenticate.aspx"
   );
 }
-
-module.exports = School;

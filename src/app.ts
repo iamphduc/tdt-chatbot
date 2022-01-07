@@ -1,19 +1,24 @@
 import dotenv from "dotenv";
 import express from "express";
-
-const router = require("./routes/index.routes");
-const viewEngine = require("./configs/viewEngine");
+import path from "path";
 
 dotenv.config();
+
+import { route } from "./routes";
+
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
-app.use(express.json()); // handle XMLHttpRequest, fetch,...
-app.use(express.urlencoded({ extended: true })); // handle FormData
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-viewEngine(app);
-router(app);
+// View Engine
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "./views"));
 
-app.listen(port, () => {
-  console.log(`App listen: http://localhost:${port}`);
+// Routes
+route(app);
+
+app.listen(PORT, () => {
+  console.log(`App listen: http://localhost:${PORT}`);
 });

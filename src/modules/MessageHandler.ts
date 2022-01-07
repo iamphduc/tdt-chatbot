@@ -1,20 +1,28 @@
-const Schedule = require("./Schedule");
-const Score = require("./Score");
+import { Schedule } from "./Schedule";
+import { Score } from "./Score";
 
-const { callSendAPI, callMultipleSendAPI } = require("../utils/facebookCall");
-const { createQuickReplies, createScoreListElements } = require("../utils/postback");
-const {
+import { callSendAPI, callMultipleSendAPI } from "src/utils/facebookCall";
+import { createQuickReplies, createScoreListElements } from "src/utils/postback";
+import {
   toScheduleMessage,
   toScoreMessage,
   toScoreAllMessage,
   toHelpMessage,
-} = require("../utils/message");
-const timezone = require("../utils/timezone");
+} from "src/utils/message";
+import timezone from "src/utils/timezone";
 
-class MessageHandler {
-  async handleHelp(sender_psid, mssv, pass) {
+export class MessageHandler {
+  readonly Schedule: Schedule;
+  readonly Score: Score;
+
+  constructor() {
+    this.Schedule = new Schedule();
+    this.Score = new Score();
+  }
+
+  async handleHelp(sender_psid: string, mssv: string, pass: string) {
     try {
-      const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS);
+      const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS || "");
       const helpMessage = toHelpMessage(scoreOptions);
 
       callSendAPI(sender_psid, {
@@ -35,11 +43,11 @@ class MessageHandler {
     }
   }
 
-  async handleWeek(sender_psid, mssv, pass) {
+  async handleWeek(sender_psid: string, mssv: string, pass: string) {
     try {
       callSendAPI(sender_psid, { text: "Đợi mình lấy TKB tuần này nhé!" });
 
-      const data = await Schedule.getSchedule(mssv, pass);
+      const data = await this.Schedule.getSchedule(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const weekMessage = toScheduleMessage(data);
@@ -50,11 +58,11 @@ class MessageHandler {
     }
   }
 
-  async handleWeekNext(sender_psid, mssv, pass) {
+  async handleWeekNext(sender_psid: string, mssv: string, pass: string) {
     try {
       callSendAPI(sender_psid, { text: "Đợi mình lấy TKB tuần sau nhé!" });
 
-      const data = await Schedule.getSchedule(mssv, pass, true);
+      const data = await this.Schedule.getSchedule(mssv, pass, true);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const weekNextMessage = toScheduleMessage(data);
@@ -65,7 +73,7 @@ class MessageHandler {
     }
   }
 
-  async handleWeekday(sender_psid, mssv, pass, date) {
+  async handleWeekday(sender_psid: string, mssv: string, pass: string, date: any) {
     try {
       const notWeekday = {
         [timezone.TODAY]: "Hôm nay",
@@ -77,18 +85,20 @@ class MessageHandler {
         text: `Đợi mình lấy TKB ${dateText == "CN" ? dateText : dateText.toLowerCase()} nhé!`,
       });
 
-      const data = await Schedule.getSchedule(mssv, pass);
+      const data = await this.Schedule.getSchedule(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
-      const dateMessage = toScheduleMessage(data.filter((ele) => ele.date.includes(date)));
-      if (dateMessage) callSendAPI(sender_psid, { text: dateMessage.join("\n") });
-      else callSendAPI(sender_psid, { text: `${dateText} không có lịch học` });
+      if (Array.isArray(data)) {
+        const dateMessage = toScheduleMessage(data.filter((ele: any) => ele.date.includes(date)));
+        if (dateMessage) callSendAPI(sender_psid, { text: dateMessage.join("\n") });
+        else callSendAPI(sender_psid, { text: `${dateText} không có lịch học` });
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
-  async handleScore(sender_psid, mssv, pass) {
+  async handleScore(sender_psid: string, mssv: string, pass: string) {
     try {
       const semesterName = findScoreSemesterName(sender_psid, process.env.SEMESTER_SCORE);
 
@@ -96,7 +106,7 @@ class MessageHandler {
         text: `Đợi mình lấy điểm ${semesterName} nhé!`,
       });
 
-      const data = await Score.getScore(mssv, pass);
+      const data = await this.Score.getScore(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const scoreMessage = toScoreMessage(data);
@@ -110,11 +120,11 @@ class MessageHandler {
     }
   }
 
-  async handleScoreAll(sender_psid, mssv, pass) {
+  async handleScoreAll(sender_psid: string, mssv: string, pass: string) {
     try {
       callSendAPI(sender_psid, { text: "Đợi mình lấy điểm tổng hợp nhé!" });
 
-      const data = await Score.getScoreAll(mssv, pass);
+      const data = await this.Score.getScoreAll(mssv, pass);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const scoreAllMessage = await toScoreAllMessage(data);
@@ -125,9 +135,9 @@ class MessageHandler {
     }
   }
 
-  async handleScoreList(sender_psid, mssv, pass) {
+  async handleScoreList(sender_psid: string, mssv?: string, pass?: string) {
     try {
-      const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS).reverse();
+      const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS || "").reverse();
 
       await callSendAPI(sender_psid, {
         attachment: {
@@ -143,7 +153,7 @@ class MessageHandler {
     }
   }
 
-  async handleScoreCustom(sender_psid, mssv, pass, message) {
+  async handleScoreCustom(sender_psid: string, mssv: string, pass: string, message: any) {
     try {
       const semester = message.slice(7);
       const semesterName = findScoreSemesterName(sender_psid, semester);
@@ -153,7 +163,7 @@ class MessageHandler {
         text: `Đợi mình lấy điểm ${semesterName} nhé!`,
       });
 
-      const data = await Score.getScore(mssv, pass, semester);
+      const data = await this.Score.getScore(mssv, pass, semester);
       if (!isLoginSuccessful(sender_psid, data)) return;
 
       const scoreMessage = toScoreMessage(data);
@@ -169,7 +179,7 @@ class MessageHandler {
 }
 
 // Check if login was successfull
-function isLoginSuccessful(sender_psid, data) {
+function isLoginSuccessful(sender_psid: string, data: any) {
   if (data != "Login failed") return true;
 
   callSendAPI(sender_psid, { text: `Không thể đăng nhập vào cổng sinh viên` });
@@ -177,15 +187,15 @@ function isLoginSuccessful(sender_psid, data) {
 }
 
 // Get TenHocKy from NameTable
-function findScoreSemesterName(sender_psid, semester) {
-  const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS);
-  const foundSemester = scoreOptions.find((ele) => ele.NameTable == semester);
+function findScoreSemesterName(sender_psid: string, semester: any) {
+  const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS || "");
+  const foundSemester = scoreOptions.find((ele: any) => ele.NameTable == semester);
 
   // Check if invalid NameTable for score custom
   if (!foundSemester) {
     callSendAPI(sender_psid, {
       text: "Bảng điểm không hợp lệ",
-      quick_replies: createQuickReplies(scoreOptions.map((ele) => `score -${ele.NameTable}`)),
+      quick_replies: createQuickReplies(scoreOptions.map((ele: any) => `score -${ele.NameTable}`)),
     });
 
     return false;
@@ -193,5 +203,3 @@ function findScoreSemesterName(sender_psid, semester) {
 
   return foundSemester.TenHocKy;
 }
-
-module.exports = new MessageHandler();

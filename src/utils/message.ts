@@ -1,7 +1,7 @@
-function toScheduleMessage(scheduleArr) {
+export function toScheduleMessage(scheduleArr: any) {
   if (scheduleArr.length == 0) return "";
 
-  return scheduleArr.map((ele) => {
+  return scheduleArr.map((ele: any) => {
     return (
       (ele.note == "" ? `===== ${ele.date} =====\n` : `##### ${ele.date} #####\n`) +
       `Môn: ${ele.subject}\n` +
@@ -15,10 +15,10 @@ function toScheduleMessage(scheduleArr) {
   });
 }
 
-function toScoreMessage(scoreArr) {
+export function toScoreMessage(scoreArr: any) {
   if (!scoreArr) return "";
 
-  return scoreArr.map((ele, i) => {
+  return scoreArr.map((ele: any, i: number) => {
     // GPA
     if (i + 1 == scoreArr.length) {
       if (ele == null) return `########   GPA   ########\n` + `----->  Không có điểm \n`;
@@ -82,7 +82,7 @@ function toScoreMessage(scoreArr) {
   });
 }
 
-function toScoreAllMessage(scoreAllArr) {
+export function toScoreAllMessage(scoreAllArr: any) {
   if (!scoreAllArr) return "";
 
   /* 
@@ -107,7 +107,7 @@ function toScoreAllMessage(scoreAllArr) {
     "GhiChu": null
   */
 
-  return scoreAllArr.map((ele, i) => {
+  return scoreAllArr.map((ele: any, i: number) => {
     return (
       `========|  [ ${i + 1} ]  |========\n` +
       `Môn: ${ele.TenMH.replace(
@@ -121,7 +121,7 @@ function toScoreAllMessage(scoreAllArr) {
   });
 }
 
-function toHelpMessage(scoreOptions) {
+export function toHelpMessage(scoreOptions: any) {
   /*
     "id":0,
     "TenHocKy":"Học kỳ 1/ 2021-2022",
@@ -130,7 +130,7 @@ function toHelpMessage(scoreOptions) {
   */
 
   const readableScoreOptions = scoreOptions.map(
-    (ele) => `-${ele.NameTable}: ${ele.TenHocKy.replace("Học kỳ", "HK")}`
+    (ele: any) => `-${ele.NameTable}: ${ele.TenHocKy.replace("Học kỳ", "HK")}`
   );
 
   return (
@@ -159,10 +159,3 @@ function toHelpMessage(scoreOptions) {
     readableScoreOptions.reverse().join("\n")
   );
 }
-
-module.exports = {
-  toScheduleMessage,
-  toScoreMessage,
-  toScoreAllMessage,
-  toHelpMessage,
-};

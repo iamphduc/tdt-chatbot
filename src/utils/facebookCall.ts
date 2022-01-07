@@ -1,6 +1,6 @@
-const request = require("request"); // for facebook API request
+import request from "request";
 
-function setUpPersistentMenu() {
+export function setUpPersistentMenu() {
   const menu_body = {
     get_started: { payload: "GET_STARTED" },
     persistent_menu: [
@@ -51,13 +51,13 @@ function setUpPersistentMenu() {
         method: "POST",
         json: menu_body,
       },
-      (err, res, body) => {
+      (err: any, res: any, body: any) => {
         if (!err) {
           console.log("Set up persistent menu!");
-          resolve();
+          resolve(true);
         } else {
           console.error("Unable to send message:" + err);
-          reject();
+          reject(false);
         }
       }
     );
@@ -65,7 +65,7 @@ function setUpPersistentMenu() {
 }
 
 // Send response messages via the Send API
-function callSendAPI(sender_psid, response) {
+export function callSendAPI(sender_psid: any, response: any) {
   // Construct the message body
   const request_body = {
     recipient: { id: sender_psid },
@@ -81,13 +81,13 @@ function callSendAPI(sender_psid, response) {
         method: "POST",
         json: request_body,
       },
-      (err, res, body) => {
+      (err: any, res: any, body: any) => {
         if (!err) {
           console.log("Message sent!");
-          resolve();
+          resolve(true);
         } else {
           console.error("Unable to send message:" + err);
-          reject();
+          reject(false);
         }
       }
     );
@@ -95,7 +95,7 @@ function callSendAPI(sender_psid, response) {
 }
 
 // Split message if it is too long
-async function callMultipleSendAPI(sender_psid, message, itemPerMessage = 8) {
+export async function callMultipleSendAPI(sender_psid: any, message: any, itemPerMessage = 8) {
   try {
     const numberOfMessage = Math.ceil(message.length / itemPerMessage);
 
@@ -114,5 +114,3 @@ async function callMultipleSendAPI(sender_psid, message, itemPerMessage = 8) {
     console.error(err);
   }
 }
-
-module.exports = { setUpPersistentMenu, callSendAPI, callMultipleSendAPI };

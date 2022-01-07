@@ -1,9 +1,8 @@
-let rp = require("request-promise");
-const cheerio = require("cheerio");
+import cheerio from "cheerio";
 
-const School = require("./School");
+import { School } from "./School";
 
-const URL = {
+const SCORE_URL = {
   HOME: "https://ketquahoctap.tdtu.edu.vn",
   SCORE: "https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap",
   GPA: "https://ketquahoctap.tdtu.edu.vn/Home/LayDTBHocKy",
@@ -11,25 +10,17 @@ const URL = {
   SEMESTER: "https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap",
 };
 
-class Score extends School {
+export class Score extends School {
   constructor() {
     super();
-
-    rp = rp.defaults({
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
-      },
-      jar: this.jar,
-    });
   }
 
   // ===== GET SCORE DATA ===== //
   async getScoreData() {
     try {
       console.time("Score home");
-      const scoreHome = await rp({
-        uri: URL.HOME,
+      const scoreHome = await this.rp({
+        uri: SCORE_URL.HOME,
       });
       console.timeEnd("Score home");
 
@@ -44,11 +35,12 @@ class Score extends School {
       return data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
   // ===== SCORE + GPA ===== //
-  async getScore(mssv, pass, semester = process.env.SEMESTER_SCORE) {
+  async getScore(mssv: string, pass: string, semester = process.env.SEMESTER_SCORE) {
     try {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return "Login failed";
@@ -57,8 +49,8 @@ class Score extends School {
 
       // request score
       console.time("Score");
-      const score = await rp({
-        uri: URL.SCORE,
+      const score = await this.rp({
+        uri: SCORE_URL.SCORE,
         qs: { mssv, nametable: semester, hedaotao, time: Date.now() },
         json: true,
       });
@@ -66,8 +58,8 @@ class Score extends School {
 
       // request gpa
       console.time("GPA");
-      const GPA = await rp({
-        uri: URL.GPA,
+      const GPA = await this.rp({
+        uri: SCORE_URL.GPA,
         qs: { lop, mssv, tenBangDiem: semester, time: Date.now() },
         json: true,
       });
@@ -82,7 +74,7 @@ class Score extends School {
   }
 
   // ===== SCORE ALL ===== //
-  async getScoreAll(mssv, pass) {
+  async getScoreAll(mssv: string, pass: string) {
     try {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return "Login failed";
@@ -91,8 +83,8 @@ class Score extends School {
 
       // request score total
       console.time("Score total");
-      const scoreTotal = await rp({
-        uri: URL.ALL,
+      const scoreTotal = await this.rp({
+        uri: SCORE_URL.ALL,
         qs: { mssv, namvt, hedaotao, time: Date.now() },
         json: true,
       });
@@ -105,7 +97,7 @@ class Score extends School {
   }
 
   // ===== SCORE SEMESTER ===== //
-  async getScoreSemester(mssv, pass) {
+  async getScoreSemester(mssv: string, pass: string) {
     try {
       const loginResult = await super.login(mssv, pass);
       if (!loginResult) return "Login failed";
@@ -114,8 +106,8 @@ class Score extends School {
 
       // request score semester
       console.time("Score semester");
-      const scoreSemester = await rp({
-        uri: URL.SEMESTER,
+      const scoreSemester = await this.rp({
+        uri: SCORE_URL.SEMESTER,
         qs: { mssv, namvt, hedaotao, time: Date.now() },
         json: true,
       });
@@ -130,5 +122,3 @@ class Score extends School {
     }
   }
 }
-
-module.exports = new Score();
