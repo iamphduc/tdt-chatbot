@@ -1,12 +1,12 @@
 import { Application } from "express";
 
-import { WebhookController } from "src/controllers/webhook.controller";
 import { ApiController } from "src/controllers/api.controller";
-import { SettingController } from "src/controllers/setting.controller";
+import { WebController } from "src/controllers/web.controller";
+import { WebhookController } from "src/controllers/webhook.controller";
 
-const webhookController = new WebhookController();
 const apiController = new ApiController();
-const settingController = new SettingController();
+const webController = new WebController();
+const webhookController = new WebhookController();
 
 export const route = (app: Application) => {
   // webhook
@@ -20,8 +20,8 @@ export const route = (app: Application) => {
   app.post("/api/score-all", apiController.getScoreAll);
 
   // setting
-  app.get("/setting", settingController.getSetting);
-  app.post("/setting", settingController.configurate);
+  app.get("/setting", webController.getSetting);
+  app.post("/setting", webController.configurate);
 
   app.get("/", (req, res) => res.sendStatus(404));
 };
