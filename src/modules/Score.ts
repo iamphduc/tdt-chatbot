@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-useless-constructor */
 import cheerio from "cheerio";
 
 import { School } from "./School";

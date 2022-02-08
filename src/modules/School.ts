@@ -2,6 +2,14 @@ import rp from "request-promise";
 
 const LOGIN_URL = "https://stdportal.tdtu.edu.vn/Login/SignIn";
 
+function setAuthCookie(jar: any, token: string) {
+  const date = new Date(86400000 + 1000 * 60 * 30 + +new Date()).toLocaleString();
+
+  jar.setCookie(
+    "AUTH_COOKIE=" + token + "|" + date + "; path=/",
+    "http://sso.tdt.edu.vn/Authenticate.aspx"
+  );
+}
 export class School {
   jar: any;
   rp: any;
@@ -41,13 +49,4 @@ export class School {
       console.error(error);
     }
   }
-}
-
-function setAuthCookie(jar: any, token: string) {
-  const date = new Date(86400000 + 1000 * 60 * 30 + +new Date()).toLocaleString();
-
-  jar.setCookie(
-    "AUTH_COOKIE=" + token + "|" + date + "; path=/",
-    "http://sso.tdt.edu.vn/Authenticate.aspx"
-  );
 }

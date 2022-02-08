@@ -19,10 +19,6 @@ export class ScoreScraperService extends SchoolScraperService {
     LayHocKy: "https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap",
   };
 
-  constructor(mssv: string, pass: string) {
-    super(mssv, pass);
-  }
-
   private async getStudentData() {
     const { data } = await this.client({
       method: "GET",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { Schedule } from "./Schedule";
 import { Score } from "./Score";
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Request, Response } from "express";
 
 import { MessageHandler } from "src/modules/MessageHandler";

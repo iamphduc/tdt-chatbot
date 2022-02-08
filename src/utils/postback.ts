@@ -6,6 +6,14 @@ export function createQuickReplies(replies: any) {
   }));
 }
 
+function createScoreListButtons(buttons: any) {
+  return buttons.map((ele: any) => ({
+    type: "postback",
+    title: ele.TenHocKy,
+    payload: `score -${ele.NameTable}`,
+  }));
+}
+
 export function createScoreListElements(options: any) {
   const elements = [];
   for (let i = 0; i < options.length; i += 3) {
@@ -16,12 +24,4 @@ export function createScoreListElements(options: any) {
   }
 
   return elements;
-}
-
-function createScoreListButtons(buttons: any) {
-  return buttons.map((ele: any) => ({
-    type: "postback",
-    title: ele.TenHocKy,
-    payload: `score -${ele.NameTable}`,
-  }));
 }

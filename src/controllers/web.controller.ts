@@ -3,6 +3,11 @@ import { Request, Response } from "express";
 import { Schedule } from "src/modules/Schedule";
 import { Score } from "src/modules/Score";
 
+function setSemester(schedule: any, score: any) {
+  if (schedule) process.env.SEMESTER_SCHEDULE = schedule;
+  if (score) process.env.SEMESTER_SCORE = score;
+}
+
 export class WebController {
   readonly Schedule: Schedule;
   readonly Score: Score;
@@ -66,9 +71,4 @@ export class WebController {
 
     return res.status(200).json({ message: "success" });
   }
-}
-
-function setSemester(schedule: any, score: any) {
-  if (schedule) process.env.SEMESTER_SCHEDULE = schedule;
-  if (score) process.env.SEMESTER_SCORE = score;
 }

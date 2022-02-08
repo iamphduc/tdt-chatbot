@@ -14,10 +14,6 @@ interface ASPNETVariable {
 export class TimetableScraperService extends SchoolScraperService {
   private readonly TIMETABLE_URL: string = "https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx";
 
-  constructor(mssv: string, pass: string) {
-    super(mssv, pass);
-  }
-
   private async getASPNETVariable() {
     const { data } = await this.client({
       method: "GET",

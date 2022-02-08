@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-useless-constructor */
 import cheerio from "cheerio";
 
 import { School } from "./School";
@@ -52,8 +53,8 @@ export class Schedule extends School {
         ThoiKhoaBieu1$radChonLua: "radXemTKBTheoTuan",
       };
 
-      if (next) formData["ThoiKhoaBieu1$btnTuanSau"] = "Tuần sau|Following week >>";
-      else formData["ThoiKhoaBieu1$btnTuanHienTai"] = "";
+      if (next) formData.ThoiKhoaBieu1$btnTuanSau = "Tuần sau|Following week >>";
+      else formData.ThoiKhoaBieu1$btnTuanHienTai = "";
 
       console.time("Change schedule");
       await this.rp({
