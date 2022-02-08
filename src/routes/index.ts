@@ -1,27 +1,14 @@
 import { Application } from "express";
 
-import { WebhookController } from "src/controllers/webhook.controller";
-import { ApiController } from "src/controllers/api.controller";
-import { SettingController } from "src/controllers/setting.controller";
-
-const webhookController = new WebhookController();
-const apiController = new ApiController();
-const settingController = new SettingController();
+import { apiRouter } from "./api.router";
+import { webRouter } from "./web.router";
+import { webhookRouter } from "./webhook.router";
 
 export const route = (app: Application) => {
-  // webhook
-  app.get("/webhook", webhookController.connect);
-  app.post("/webhook", webhookController.handle);
+  app.use("/", webRouter);
+  app.use("/api", apiRouter);
+  app.use("/webhook", webhookRouter);
 
-  // api
-  app.post("/api/week", apiController.getSchedule);
-  app.post("/api/week-next", apiController.getScheduleNext);
-  app.post("/api/score", apiController.getScore);
-  app.post("/api/score-all", apiController.getScoreAll);
-
-  // setting
-  app.get("/setting", settingController.getSetting);
-  app.post("/setting", settingController.configurate);
-
-  app.get("/", (req, res) => res.sendStatus(404));
+  // 404
+  app.use((req, res) => res.sendStatus(404));
 };

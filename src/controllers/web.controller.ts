@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { Schedule } from "src/modules/Schedule";
 import { Score } from "src/modules/Score";
 
-export class SettingController {
+export class WebController {
   readonly Schedule: Schedule;
   readonly Score: Score;
 
