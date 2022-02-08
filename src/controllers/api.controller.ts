@@ -1,67 +1,62 @@
 import { Request, Response } from "express";
 
-import { Schedule } from "../modules/Schedule";
-import { Score } from "../modules/Score";
+import { ScoreService } from "src/services/scraper/score.service";
+import { TimetableService } from "src/services/scraper/timetable.service";
 
 export class ApiController {
-  readonly Schedule: Schedule;
-  readonly Score: Score;
+  public async getScoreBySemester(req: Request, res: Response): Promise<void> {
+    const { mssv, pass } = req.body;
 
-  constructor() {
-    this.Schedule = new Schedule();
-    this.Score = new Score();
+    if (!mssv || !pass) {
+      res.status(400).json({ message: "Missing mssv or pass" });
+      return;
+    }
 
-    this.getSchedule = this.getSchedule.bind(this);
-    this.getScheduleNext = this.getScheduleNext.bind(this);
-    this.getScore = this.getScore.bind(this);
-    this.getScoreAll = this.getScoreAll.bind(this);
+    const scoreService = new ScoreService(mssv, pass);
+    const scoreBySemester = await scoreService.getBySemester();
+
+    res.status(200).json(scoreBySemester);
   }
 
-  // [POST] /api/week
-  async getSchedule(req: Request, res: Response) {
+  public async getScoreOverall(req: Request, res: Response): Promise<void> {
     const { mssv, pass } = req.body;
-    if (!mssv || !pass) return res.sendStatus(400);
 
-    try {
-      return res.json(await this.Schedule.getSchedule(mssv, pass));
-    } catch (err) {
-      res.send(err);
+    if (!mssv || !pass) {
+      res.status(400).json({ message: "Missing mssv or pass" });
+      return;
     }
+
+    const scoreService = new ScoreService(mssv, pass);
+    const scoreOverall = await scoreService.getOverall();
+
+    res.status(200).json(scoreOverall);
   }
 
-  // [POST] /api/week-next
-  async getScheduleNext(req: Request, res: Response) {
+  public async getTimetableThisWeek(req: Request, res: Response): Promise<void> {
     const { mssv, pass } = req.body;
-    if (!mssv || !pass) return res.sendStatus(400);
 
-    try {
-      return res.json(await this.Schedule.getSchedule(mssv, pass, true));
-    } catch (err) {
-      res.send(err);
+    if (!mssv || !pass) {
+      res.status(400).json({ message: "Missing mssv or pass" });
+      return;
     }
+
+    const timetableService = new TimetableService(mssv, pass);
+    const timetableThisWeek = await timetableService.getThisWeek();
+
+    res.status(200).json(timetableThisWeek);
   }
 
-  // [POST] /api/score
-  async getScore(req: Request, res: Response) {
+  public async getTimeTableNextWeek(req: Request, res: Response): Promise<void> {
     const { mssv, pass } = req.body;
-    if (!mssv || !pass) return res.sendStatus(400);
 
-    try {
-      return res.json(await this.Score.getScore(mssv, pass, undefined));
-    } catch (err) {
-      res.send(err);
+    if (!mssv || !pass) {
+      res.status(400).json({ message: "Missing mssv or pass" });
+      return;
     }
-  }
 
-  // [POST] /api/score-all
-  async getScoreAll(req: Request, res: Response) {
-    const { mssv, pass } = req.body;
-    if (!mssv || !pass) return res.sendStatus(400);
+    const timetableService = new TimetableService(mssv, pass);
+    const timetableNextWeek = await timetableService.getNextWeek();
 
-    try {
-      return res.json(await this.Score.getScoreAll(mssv, pass));
-    } catch (err) {
-      res.send(err);
-    }
+    res.status(200).json(timetableNextWeek);
   }
 }

@@ -8,18 +8,18 @@ const apiRouter = Router();
 
 apiRouter //
   .route("/week")
-  .post(apiController.getSchedule);
+  .post(apiController.getTimetableThisWeek);
 
 apiRouter //
   .route("/week-next")
-  .post(apiController.getScheduleNext);
+  .post(apiController.getTimeTableNextWeek);
 
 apiRouter //
   .route("/score")
-  .post(apiController.getScore);
+  .post(apiController.getScoreBySemester);
 
 apiRouter //
-  .route("/score-all")
-  .post(apiController.getScoreAll);
+  .route("/score-overall")
+  .post(apiController.getScoreOverall);
 
 export { apiRouter };
