@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { ScoreService } from "src/services/scraper/score.service";
-import { TimetableService } from "src/services/scraper/timetable.service";
+import { ScoreScraperService } from "src/services/scraper/score.scraper.service";
+import { TimetableScraperService } from "src/services/scraper/timetable.scraper.service";
 
 export class ApiController {
   public async getScoreBySemester(req: Request, res: Response): Promise<void> {
@@ -12,7 +12,7 @@ export class ApiController {
       return;
     }
 
-    const scoreService = new ScoreService(mssv, pass);
+    const scoreService = new ScoreScraperService(mssv, pass);
     const scoreBySemester = await scoreService.getBySemester();
 
     res.status(200).json(scoreBySemester);
@@ -26,7 +26,7 @@ export class ApiController {
       return;
     }
 
-    const scoreService = new ScoreService(mssv, pass);
+    const scoreService = new ScoreScraperService(mssv, pass);
     const scoreOverall = await scoreService.getOverall();
 
     res.status(200).json(scoreOverall);
@@ -40,7 +40,7 @@ export class ApiController {
       return;
     }
 
-    const timetableService = new TimetableService(mssv, pass);
+    const timetableService = new TimetableScraperService(mssv, pass);
     const timetableThisWeek = await timetableService.getThisWeek();
 
     res.status(200).json(timetableThisWeek);
@@ -54,7 +54,7 @@ export class ApiController {
       return;
     }
 
-    const timetableService = new TimetableService(mssv, pass);
+    const timetableService = new TimetableScraperService(mssv, pass);
     const timetableNextWeek = await timetableService.getNextWeek();
 
     res.status(200).json(timetableNextWeek);

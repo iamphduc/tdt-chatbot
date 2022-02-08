@@ -1,6 +1,6 @@
 import cheerio from "cheerio";
 
-import { SchoolService } from "./school.service";
+import { SchoolScraperService } from "./school.scraper.service";
 
 interface ScoreUrl {
   TrangChu: string;
@@ -10,7 +10,7 @@ interface ScoreUrl {
   LayHocKy: string;
 }
 
-export class ScoreService extends SchoolService {
+export class ScoreScraperService extends SchoolScraperService {
   private readonly SCORE_URL: ScoreUrl = {
     TrangChu: "https://ketquahoctap.tdtu.edu.vn",
     LayKetQuaHocTap: "https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap",

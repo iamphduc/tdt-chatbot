@@ -1,6 +1,6 @@
 import cheerio from "cheerio";
 
-import { SchoolService } from "./school.service";
+import { SchoolScraperService } from "./school.scraper.service";
 import { extractTimetable, extractTimetableSemester } from "./cheerio.timetable";
 
 interface ASPNETVariable {
@@ -11,7 +11,7 @@ interface ASPNETVariable {
   __VIEWSTATEGENERATOR?: string;
 }
 
-export class TimetableService extends SchoolService {
+export class TimetableScraperService extends SchoolScraperService {
   private readonly TIMETABLE_URL: string = "https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx";
 
   constructor(mssv: string, pass: string) {

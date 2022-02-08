@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
-export class SchoolService {
+export class SchoolScraperService {
   private readonly LOGIN_URL: string = "https://stdportal.tdtu.edu.vn/Login/SignIn";
 
   protected mssv: string;
