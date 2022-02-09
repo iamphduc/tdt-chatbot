@@ -17,7 +17,7 @@ app.use(morgan("tiny", { stream }));
 
 // View Engine
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "./views"));
+app.set("views", path.join(__dirname, "../views"));
 
 // Routes
 route(app);
