@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { Schedule } from "src/modules/Schedule";
-import { Score } from "src/modules/Score";
+import { Schedule } from "../modules/Schedule";
+import { Score } from "../modules/Score";
 
 function setSemester(schedule: any, score: any) {
   if (schedule) process.env.SEMESTER_SCHEDULE = schedule;

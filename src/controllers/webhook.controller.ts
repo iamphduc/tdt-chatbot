@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Request, Response } from "express";
 
-import { MessageHandler } from "src/modules/MessageHandler";
-import { saveInfor, getInfor, deleteInfor } from "src/utils/infor";
-import { setUpPersistentMenu, callSendAPI } from "src/utils/facebookCall";
-import timezone from "src/utils/timezone";
+import { MessageHandler } from "../modules/MessageHandler";
+import { saveInfor, getInfor, deleteInfor } from "../utils/infor";
+import { setUpPersistentMenu, callSendAPI } from "../utils/facebookCall";
+import timezone from "../utils/timezone";
 
 export class WebhookController {
   constructor() {

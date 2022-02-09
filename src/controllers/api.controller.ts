@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { ScoreScraperService } from "src/services/scraper/score.scraper.service";
-import { TimetableScraperService } from "src/services/scraper/timetable.scraper.service";
+import { ScoreScraperService } from "../services/scraper/score.scraper.service";
+import { TimetableScraperService } from "../services/scraper/timetable.scraper.service";
 
 export class ApiController {
   public async getScoreBySemester(req: Request, res: Response): Promise<void> {

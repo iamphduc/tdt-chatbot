@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { ApiController } from "src/controllers/api.controller";
+import { ApiController } from "../controllers/api.controller";
 
 const apiController = new ApiController();
 

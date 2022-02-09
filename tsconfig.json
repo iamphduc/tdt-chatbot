@@ -8,6 +8,9 @@
     "moduleResolution": "node",
     "baseUrl": "./",
 
+    /* JavaScript Support */
+    "allowJs": true,
+
     /* Emit */
     "sourceMap": true,
     "outDir": "./dist",
@@ -24,7 +27,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  }
+  "exclude": ["node_modules", "dist"]
 }

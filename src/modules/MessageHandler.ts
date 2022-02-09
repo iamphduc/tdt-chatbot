@@ -2,15 +2,15 @@
 import { Schedule } from "./Schedule";
 import { Score } from "./Score";
 
-import { callSendAPI, callMultipleSendAPI } from "src/utils/facebookCall";
-import { createQuickReplies, createScoreListElements } from "src/utils/postback";
+import { callSendAPI, callMultipleSendAPI } from "../utils/facebookCall";
+import { createQuickReplies, createScoreListElements } from "../utils/postback";
 import {
   toScheduleMessage,
   toScoreMessage,
   toScoreAllMessage,
   toHelpMessage,
-} from "src/utils/message";
-import timezone from "src/utils/timezone";
+} from "../utils/message";
+import timezone from "../utils/timezone";
 
 export class MessageHandler {
   readonly Schedule: Schedule;

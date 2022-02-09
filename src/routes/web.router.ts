@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { WebController } from "src/controllers/web.controller";
+import { WebController } from "../controllers/web.controller";
 
 const webController = new WebController();
 
