@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 import cheerio from "cheerio";
 

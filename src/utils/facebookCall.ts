@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/naming-convention */
 import request from "request";
 
@@ -57,8 +58,8 @@ export function setUpPersistentMenu() {
           console.log("Set up persistent menu!");
           resolve(true);
         } else {
-          console.error("Unable to send message:" + err);
-          reject(false);
+          console.error(`Unable to send message: ${err}`);
+          reject(err);
         }
       }
     );
@@ -87,8 +88,8 @@ export function callSendAPI(sender_psid: any, response: any) {
           console.log("Message sent!");
           resolve(true);
         } else {
-          console.error("Unable to send message:" + err);
-          reject(false);
+          console.error(`Unable to send message: ${err}`);
+          reject(err);
         }
       }
     );
@@ -100,7 +101,7 @@ export async function callMultipleSendAPI(sender_psid: any, message: any, itemPe
   try {
     const numberOfMessage = Math.ceil(message.length / itemPerMessage);
 
-    for (let i = 0; i < numberOfMessage; i++) {
+    for (let i = 0; i < numberOfMessage; i += 1) {
       // Index of the first item in message
       const firstIdx = itemPerMessage * i;
 

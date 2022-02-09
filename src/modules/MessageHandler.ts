@@ -83,7 +83,7 @@ export class MessageHandler {
       const dateText = date in notWeekday ? notWeekday[date] : date;
 
       callSendAPI(sender_psid, {
-        text: `Đợi mình lấy TKB ${dateText == "CN" ? dateText : dateText.toLowerCase()} nhé!`,
+        text: `Đợi mình lấy TKB ${dateText === "CN" ? dateText : dateText.toLowerCase()} nhé!`,
       });
 
       const data = await this.Schedule.getSchedule(mssv, pass);
@@ -181,7 +181,7 @@ export class MessageHandler {
 
 // Check if login was successfull
 function isLoginSuccessful(sender_psid: string, data: any) {
-  if (data != "Login failed") return true;
+  if (data !== "Login failed") return true;
 
   callSendAPI(sender_psid, { text: `Không thể đăng nhập vào cổng sinh viên` });
   return false;
@@ -190,7 +190,7 @@ function isLoginSuccessful(sender_psid: string, data: any) {
 // Get TenHocKy from NameTable
 function findScoreSemesterName(sender_psid: string, semester: any) {
   const scoreOptions = JSON.parse(process.env.SCORE_OPTIONS || "");
-  const foundSemester = scoreOptions.find((ele: any) => ele.NameTable == semester);
+  const foundSemester = scoreOptions.find((ele: any) => ele.NameTable === semester);
 
   // Check if invalid NameTable for score custom
   if (!foundSemester) {

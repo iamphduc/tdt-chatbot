@@ -41,17 +41,18 @@ export class WebController {
         setSemester(configSchedule || defaultSchedule.value, configScore || defaultScore.NameTable);
         console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
 
-        return res.render("setting", {
+        res.render("setting", {
           scheduleOptions,
           scoreOptions,
           configSchedule,
           configScore,
         });
+
+        return;
       }
 
-      return res.render("setting");
+      res.render("setting");
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: "Oops! Something wrong" });
     }
   }

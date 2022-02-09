@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 import winston from "winston";
 
 const { createLogger, format, transports } = winston;

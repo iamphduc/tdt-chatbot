@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import rp from "request-promise";
 
 const LOGIN_URL = "https://stdportal.tdtu.edu.vn/Login/SignIn";
@@ -5,10 +6,7 @@ const LOGIN_URL = "https://stdportal.tdtu.edu.vn/Login/SignIn";
 function setAuthCookie(jar: any, token: string) {
   const date = new Date(86400000 + 1000 * 60 * 30 + +new Date()).toLocaleString();
 
-  jar.setCookie(
-    "AUTH_COOKIE=" + token + "|" + date + "; path=/",
-    "http://sso.tdt.edu.vn/Authenticate.aspx"
-  );
+  jar.setCookie(`AUTH_COOKIE=${token}|${date}; path=/`, "http://sso.tdt.edu.vn/Authenticate.aspx");
 }
 export class School {
   jar: any;
@@ -38,7 +36,7 @@ export class School {
       });
       console.timeEnd("Login");
       console.log(result);
-      if (result == "fail") return false;
+      if (result === "fail") return false;
 
       // set cookie manually is much faster than redirect authentication
       const token = url.slice(url.indexOf("Token=") + 6);

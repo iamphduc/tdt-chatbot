@@ -1,16 +1,15 @@
+/* eslint-disable arrow-body-style */
 export function toScheduleMessage(scheduleArr: any) {
-  if (scheduleArr.length == 0) return "";
+  if (scheduleArr.length === 0) return "";
 
   return scheduleArr.map((ele: any) => {
     return (
-      (ele.note == "" ? `===== ${ele.date} =====\n` : `##### ${ele.date} #####\n`) +
+      `${ele.note === "" ? `===== ${ele.date} =====\n` : `##### ${ele.date} #####\n`}` +
       `Môn: ${ele.subject}\n` +
       `Tiết: ${ele.period}\n` +
-      `Nhóm: ${ele.group}` +
-      (ele.subGroup == 0 ? `` : `  -  Tổ: ${ele.subGroup}`) +
-      `\n` +
+      `Nhóm: ${ele.group}${ele.subGroup === 0 ? `` : `  -  Tổ: ${ele.subGroup}`}\n` +
       `Phòng: ${ele.room}\n` +
-      (ele.note == "" ? `` : `##### ${ele.note.toUpperCase()} #####\n`)
+      `${ele.note === "" ? `` : `##### ${ele.note.toUpperCase()} #####\n`}`
     );
   });
 }
@@ -20,8 +19,12 @@ export function toScoreMessage(scoreArr: any) {
 
   return scoreArr.map((ele: any, i: number) => {
     // GPA
-    if (i + 1 == scoreArr.length) {
-      if (ele == null) return `########   GPA   ########\n` + `----->  Không có điểm \n`;
+    if (i + 1 === scoreArr.length) {
+      if (ele == null) {
+        return `
+        ########   GPA   ########\n
+        ----->  Không có điểm \n`;
+      }
 
       /*
         "ID": 507447,
@@ -77,7 +80,7 @@ export function toScoreMessage(scoreArr: any) {
       `QT_1: ${ele.Diem1}  -  QT_2: ${ele.Diem1_1}\n` +
       `Giữa kỳ: ${ele.Diem2}  -  Cuối kỳ: ${ele.DiemThi1}\n` +
       `----->  ĐTB: ${ele.DTB}  <-----\n` +
-      `Ghi chú: ${ele.GhiChu == "" ? "không" : ele.GhiChu}\n`
+      `Ghi chú: ${ele.GhiChu === "" ? "không" : ele.GhiChu}\n`
     );
   });
 }
@@ -155,7 +158,6 @@ export function toHelpMessage(scoreOptions: any) {
     `2. Sử dụng "score -NameTable"\n` +
     `Ví dụ: "score -Diem20191"\n` +
     `\n` +
-    `Danh sách NameTable:\n` +
-    readableScoreOptions.reverse().join("\n")
+    `Danh sách NameTable:\n${readableScoreOptions.reverse().join("\n")}`
   );
 }

@@ -4,7 +4,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ["airbnb-typescript/base", "prettier"],
+  extends: ["airbnb-base", "airbnb-typescript/base", "prettier"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
@@ -22,5 +22,7 @@ module.exports = {
       "always",
       { exceptAfterSingleLine: true },
     ],
+    "import/prefer-default-export": "off",
+    "class-methods-use-this": "off",
   },
 };
