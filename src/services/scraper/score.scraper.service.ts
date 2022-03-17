@@ -1,4 +1,4 @@
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 
 import { SchoolScraperService } from "./school.scraper.service";
 
@@ -10,6 +10,13 @@ interface ScoreUrl {
   LayHocKy: string;
 }
 
+export interface ScoreSemester {
+  id: number;
+  TenHocKy: string;
+  NameTable: string;
+  TenHocKy_TA: string;
+}
+
 export class ScoreScraperService extends SchoolScraperService {
   private readonly SCORE_URL: ScoreUrl = {
     TrangChu: "https://ketquahoctap.tdtu.edu.vn",
@@ -19,6 +26,22 @@ export class ScoreScraperService extends SchoolScraperService {
     LayHocKy: "https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap",
   };
 
+  private semesterDefault!: ScoreSemester;
+  private semesterList!: ScoreSemester[];
+
+  public getSemesterDefault(): ScoreSemester {
+    return this.semesterDefault;
+  }
+
+  public setSemesterDefault(semesterDefault: ScoreSemester) {
+    this.semesterDefault = semesterDefault;
+  }
+
+  public getSemesterList() {
+    return this.semesterList;
+  }
+
+  // Get student data hidden in homepage for next scraper
   private async getStudentData() {
     const { data } = await this.client({
       method: "GET",

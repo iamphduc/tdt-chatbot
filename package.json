@@ -16,6 +16,7 @@
   "author": "iamphduc",
   "license": "ISC",
   "dependencies": {
+    "autobind-decorator": "^2.4.0",
     "axios": "^0.24.0",
     "axios-cookiejar-support": "^2.0.3",
     "cheerio": "^1.0.0-rc.10",
