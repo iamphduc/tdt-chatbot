@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { ApiController } from "../controllers/api.controller";
+import { catchAsync } from "../utils/catch-async";
 
 const apiController = new ApiController();
 
@@ -8,18 +9,18 @@ const apiRouter = Router();
 
 apiRouter //
   .route("/week")
-  .post(apiController.getTimetableThisWeek);
+  .post(catchAsync(apiController.getTimetableThisWeek));
 
 apiRouter //
   .route("/week-next")
-  .post(apiController.getTimeTableNextWeek);
+  .post(catchAsync(apiController.getTimeTableNextWeek));
 
 apiRouter //
   .route("/score")
-  .post(apiController.getScoreBySemester);
+  .post(catchAsync(apiController.getScoreBySemester));
 
 apiRouter //
   .route("/score-overall")
-  .post(apiController.getScoreOverall);
+  .post(catchAsync(apiController.getScoreOverall));
 
 export { apiRouter };

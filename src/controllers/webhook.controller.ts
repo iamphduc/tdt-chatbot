@@ -15,7 +15,7 @@ import logger from "../utils/logger";
 export class WebhookController {
   // [GET] /webhook
   @boundMethod
-  connect(req: Request, res: Response) {
+  public connect(req: Request, res: Response) {
     // Your verify token. Should be a random string.
     const { VERIFY_TOKEN } = process.env;
 
@@ -44,7 +44,7 @@ export class WebhookController {
 
   // [POST] /webhook
   @boundMethod
-  handle(req: Request, res: Response) {
+  public handle(req: Request, res: Response) {
     const { body } = req;
 
     // Checks this is an event from a page subscription

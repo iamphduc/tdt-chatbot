@@ -61,7 +61,7 @@ export class WebController {
 
   // [POST] /setting
   @boundMethod
-  public handleConfigSetting(req: Request, res: Response) {
+  public async handleConfigSetting(req: Request, res: Response) {
     const { score, timetable } = req.body;
 
     this.settingService.setChosenSemester(score, timetable);
