@@ -13,7 +13,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   plugins: ["@typescript-eslint", "import"],
-  ignorePatterns: [".eslintrc.js", "**/*.config.js"],
+  ignorePatterns: [".eslintrc.js", "**/*.config.js", "/public"],
   rules: {
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-underscore-dangle": "off",

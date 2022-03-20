@@ -1,0 +1,90 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color2);
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 3rem;
+  color: var(--color3);
+}
+
+.setting {
+  display: grid;
+  grid-template-columns: 350px 350px;
+  grid-auto-rows: 350px auto;
+  column-gap: 5rem;
+  row-gap: 2rem;
+}
+
+@media screen and (max-width: 768px) {
+  .setting {
+    grid-template-columns: 350px;
+    grid-auto-rows: auto;
+  }
+}
+
+.setting__card {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color3);
+  color: white;
+  border-radius: 4px;
+  padding: 20px 30px;
+}
+
+.setting__title {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.setting__default {
+  font-style: italic;
+
+  color: var(--color2);
+}
+
+.setting__default-value {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.setting__select {
+  font-style: italic;
+  color: var(--color2);
+}
+
+.setting__select-wrapper {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.setting__select-value {
+  border: 1px solid #eee;
+  border-radius: 2px;
+  padding: 5px 10px;
+  font-size: 1.1rem;
+}
+
+.setting__select-value:hover {
+  border: 1px solid var(--color3);
+}
+
+.setting__btn {
+  grid-column: 1 / 3;
+  width: 400px;
+  justify-self: center;
+}
+
+@media screen and (max-width: 768px) {
+  .setting__btn {
+    grid-column: 1;
+    width: 100%;
+  }
+}

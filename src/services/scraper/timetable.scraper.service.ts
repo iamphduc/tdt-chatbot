@@ -1,7 +1,7 @@
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 
 import { SchoolScraperService } from "./school.scraper.service";
-import { extractTimetable, extractTimetableSemester } from "./cheerio.timetable";
+import { extractTimetable, extractTimetableSemester } from "./timetable.cheerio";
 
 interface ASPNETVariable {
   __EVENTTARGET?: string;
@@ -87,7 +87,7 @@ export class TimetableScraperService extends SchoolScraperService {
     return extractTimetable(data);
   }
 
-  public async getTimetableSemester() {
+  public async getSemester() {
     await super.login();
 
     const { data } = await this.client({

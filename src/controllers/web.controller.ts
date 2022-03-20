@@ -1,75 +1,74 @@
 import { Request, Response } from "express";
+import { boundMethod } from "autobind-decorator";
 
-import { Schedule } from "../modules/Schedule";
-import { Score } from "../modules/Score";
+import { SettingService } from "../services/web/setting.service";
 
-function setSemester(schedule: any, score: any) {
-  if (schedule) process.env.SEMESTER_SCHEDULE = schedule;
-  if (score) process.env.SEMESTER_SCORE = score;
+interface ScoreSemester {
+  id: number;
+  TenHocKy: string;
+  NameTable: string;
+  TenHocKy_TA: string;
+}
+
+interface TimetableSemester {
+  text: string;
+  value: string;
+  isSelected: boolean;
 }
 
 export class WebController {
-  readonly Schedule: Schedule;
-  readonly Score: Score;
+  private readonly settingService: SettingService;
 
-  constructor() {
-    this.Schedule = new Schedule();
-    this.Score = new Score();
+  constructor(settingService: SettingService) {
+    this.settingService = settingService;
+  }
 
-    this.getSetting = this.getSetting.bind(this);
-    this.configurate = this.configurate.bind(this);
+  // [GET] /
+  public async renderViewHome(req: Request, res: Response) {
+    res.render("home");
   }
 
   // [GET] /setting
-  async getSetting(req: Request, res: Response) {
-    try {
-      const { MSSV = "", PASS = "", CONFIG = "" } = process.env;
+  @boundMethod
+  public async renderViewSetting(req: Request, res: Response) {
+    const data = await this.settingService.getDataForViewSetting();
 
-      const [scheduleOptions, scoreOptions] = await Promise.all([
-        this.Schedule.getScheduleSemester(MSSV, PASS),
-        this.Score.getScoreSemester(MSSV, PASS),
-      ]);
+    let scoreSemesterList: ScoreSemester[] = [];
+    let timetableSemesterList: TimetableSemester[] = [];
+    let defaultScoreSemester = "";
+    let defaultTimetableSemester = "";
+    let chosenScoreSemester = "";
+    let chosenTimetableSemester = "";
 
-      if (scheduleOptions && Array.isArray(scheduleOptions)) {
-        const defaultSchedule = scheduleOptions.find((ele) => ele.isSelected);
-        const defaultScore = scoreOptions[0];
-
-        const { SCHEDULE: configSchedule = "", SCORE: configScore = "" } = CONFIG
-          ? JSON.parse(CONFIG)
-          : {};
-
-        setSemester(configSchedule || defaultSchedule.value, configScore || defaultScore.NameTable);
-        console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
-
-        res.render("setting", {
-          scheduleOptions,
-          scoreOptions,
-          configSchedule,
-          configScore,
-        });
-
-        return;
-      }
-
-      res.render("setting");
-    } catch (error) {
-      res.status(500).json({ message: "Oops! Something wrong" });
+    if (data) {
+      scoreSemesterList = data.scoreSemesterList ?? [];
+      timetableSemesterList = data.timetableSemesterList ?? [];
+      defaultScoreSemester = data.defaultScoreSemester ?? "Missing value";
+      defaultTimetableSemester = data.defaultTimetableSemester ?? "Missing value";
+      chosenScoreSemester = data.chosenScoreSemester ?? "";
+      chosenTimetableSemester = data.chosenTimetableSemester ?? "";
     }
+
+    res.render("setting", {
+      scoreSemesterList,
+      timetableSemesterList,
+      defaultScoreSemester,
+      defaultTimetableSemester,
+      chosenScoreSemester,
+      chosenTimetableSemester,
+    });
   }
 
   // [POST] /setting
-  configurate(req: Request, res: Response) {
-    const { configSchedule, configScore } = req.body;
+  @boundMethod
+  public handleConfigSetting(req: Request, res: Response) {
+    const { score, timetable } = req.body;
 
-    process.env.CONFIG = JSON.stringify({
-      SCHEDULE: configSchedule,
-      SCORE: configScore,
+    this.settingService.setChosenSemester(score, timetable);
+
+    res.status(200).json({
+      status: "success",
+      data: null,
     });
-
-    setSemester(configSchedule, configScore);
-    console.log("SETTING_SUCCESS");
-    console.log(process.env.SEMESTER_SCHEDULE, process.env.SEMESTER_SCORE);
-
-    return res.status(200).json({ message: "success" });
   }
 }

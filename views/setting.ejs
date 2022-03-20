@@ -1,184 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot | Setting</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/setting.css" />
 
-  <style>
-    body {
-      background-color: gainsboro;
-    }
+    <title>TDT Chatbot - Setting</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="title">Semester Setting</div>
 
-    .container {
-      margin: 30px 25vw;
-      min-width: 200px;
-      padding: 10px 30px;
-      border-radius: 5px;
-      background-color: white;
-    }
+      <div class="setting">
+        <!-- Score semester -->
+        <div class="setting__card">
+          <div class="setting__title">Score</div>
+          <div class="divider"></div>
 
-    .title {
-      margin-bottom: 20px;
-    }
+          <div class="section">
+            <div class="setting__default">Default:</div>
+            <div class="setting__default-value"><%= defaultScoreSemester %></div>
+          </div>
 
-    .heading1 {
-      font-style: italic;
-    }
+          <div class="section">
+            <div class="setting__select">
+              <label for="sel-score">Select:</label>
+            </div>
+            <div class="setting__select-wrapper">
+              <select name="score" id="sel-score" class="setting__select-value">
+                <% scoreSemesterList.forEach((semester) => { %>
+                  <option 
+                    value="<%= semester.NameTable %>"
+                    <%= semester.NameTable === chosenScoreSemester && "selected" %>
+                  >
+                    <%= semester.TenHocKy %>
+                  </option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+        </div>
 
-    .margin-vertical {
-      margin: 20px 0;
-    }
+        <!-- Timetable semester -->
+        <div class="setting__card">
+          <div class="setting__title">Timetable</div>
+          <div class="divider"></div>
 
-    .arena :not(.heading1) {
-      padding-left: 10px;
-    }
+          <div class="section">
+            <div class="setting__default">Default:</div>
+            <div class="setting__default-value"><%= defaultTimetableSemester %></div>
+          </div>
 
-    .flex-end {
-      display: flex;
-      justify-content: end;
-      margin-bottom: 20px;
-    }
+          <div class="section">
+            <div class="setting__select">
+              <label for="sel-timetable">Select:</label>
+            </div>
+            <div class="setting__select-wrapper">
+              <select name="timetable" id="sel-timetable" class="setting__select-value">
+                <% timetableSemesterList.forEach((semester) => { %>
+                  <option 
+                    value="<%= semester.value %>"
+                    <%= semester.value === chosenTimetableSemester && "selected" %>
+                  >
+                    <%= semester.text %>
+                  </option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+        </div>
 
-    .btn-save {
-      margin-top: 10px;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <div class="title">
-      <h1>SETTING PAGE</h1>
-    </div>
-
-    <hr>
-
-    <div class="arena">
-      <h2 class="heading1">Schedule</h2>
-
-      <div class="margin-vertical">
-        <label for="default-schedule">Default: </label>
-        <select id="default-schedule">
-          <% scheduleOptions.forEach(function(e) { %>
-            <option value="<%= e.value %>" <%= e.isSelected ? 'selected' : '' %> disabled>
-              <%= e.text %>
-            </option>
-          <% }); %>
-        </select>
-      </div>
-
-      <div class="margin-vertical">
-        <label for="chk-schedule">Manually? </label>
-        <input type="checkbox" id="chk-schedule" <%= configSchedule ? 'checked' : '' %>>
-      </div>
-
-      <div class="margin-vertical">
-        <label for="config-schedule">Config: </label>
-        <select id="config-schedule">
-          <% scheduleOptions.forEach(function(e) { %>
-            <option value="<%= e.value %>" <%= e.value == configSchedule ? 'selected' : '' %>>
-              <%= e.text %>
-            </option>
-          <% }); %>
-        </select>
+        <div class="setting__btn">
+          <button id="btn-submit" class="btn">Submit</button>
+          <button id="btn-back" class="btn btn--color4">Back</button>
+        </div>
       </div>
     </div>
 
-    <hr>
-
-    <div class="arena">
-      <h2 class="heading1">Score</h2>
-
-      <div class="margin-vertical">
-        <label for="default-score">Default: </label>
-        <select id="default-score">
-          <% scoreOptions.forEach(function(e, i) { %>
-            <option value="<%= e.NameTable %>" <%= i == 0 ? 'selected' : '' %> disabled>
-              <%= e.TenHocKy %>
-            </option>
-          <% }); %>
-        </select>
-      </div>
-
-      <div class="margin-vertical">
-        <label for="chk-score">Manually? </label>
-        <input type="checkbox" id="chk-score" <%= configScore ? 'checked' : '' %> >
-      </div>
-
-      <div class="margin-vertical">
-        <label for="config-score">Config: </label>
-        <select id="config-score">
-          <% scoreOptions.forEach(function(e) { %>
-            <option value="<%= e.NameTable %>" <%= e.NameTable == configScore ? 'selected' : '' %>>
-              <%= e.TenHocKy %>
-            </option>
-          <% }); %>
-        </select>
-      </div>
-    </div>
-
-    <hr>
-
-    <div class="flex-end">
-      <button type="button" class="btn-save">Save</button>
-    </div>
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-  <script>
-    const chkSchedule = $('#chk-schedule');
-    const chkScore = $('#chk-score');
-
-    function setState(name, state1, state2) {
-      $(`#default-${name}`).prop('disabled', state1);
-      $(`#config-${name}`).prop('disabled', state2);
-    }
-
-    // set default checkbox state
-    if (chkSchedule.is(':checked')) setState('schedule', true, false);
-    else setState('schedule', false, true);
-
-    if (chkScore.is(':checked')) setState('score', true, false);
-    else setState('score', false, true);
-
-    // change state onclick
-    chkSchedule.click(function () {
-      if ($(this).is(':checked')) setState('schedule', true, false);
-      else setState('schedule', false, true);
-    });
-
-    chkScore.click(function () {
-      if ($(this).is(':checked')) setState('score', true, false);
-      else setState('score', false, true);
-    });
-
-    // submit
-    $('.btn-save').click(function () {
-      const configSchedule =
-        chkSchedule.is(':checked')
-          ? $('#config-schedule').find(':checked').val()
-          : '';
-
-      const configScore =
-        chkScore.is(':checked')
-          ? $('#config-score').find(':checked').val()
-          : '';
-
-      $.post(window.location.href, {
-        configSchedule,
-        configScore,
-      }, (response) => {
-        if (response.message === 'success') alert('Saved');
-        else console.error('Submit Failed');
-      });
-    });
-
-  </script>
-</body>
-
+    <script src="/js/setting.js"></script>
+  </body>
 </html>

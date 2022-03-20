@@ -4,9 +4,8 @@ import { CookieJar } from "tough-cookie";
 
 export class SchoolScraperService {
   private readonly LOGIN_URL: string = "https://stdportal.tdtu.edu.vn/Login/SignIn";
-
-  protected mssv: string;
-  protected pass: string;
+  protected readonly mssv: string;
+  protected readonly pass: string;
   protected readonly client: AxiosInstance;
 
   constructor(mssv: string, pass: string) {
@@ -24,7 +23,7 @@ export class SchoolScraperService {
     );
   }
 
-  async login() {
+  protected async login() {
     // Similar to FormData
     const loginData = new URLSearchParams({
       user: this.mssv,

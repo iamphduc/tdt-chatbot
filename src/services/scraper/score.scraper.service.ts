@@ -7,7 +7,7 @@ interface ScoreUrl {
   LayKetQuaHocTap: string;
   LayDTBHocKy: string;
   LayDiemTongHop: string;
-  LayHocKy: string;
+  LayHocKy_KetQuaHocTap: string;
 }
 
 export interface ScoreSemester {
@@ -23,7 +23,7 @@ export class ScoreScraperService extends SchoolScraperService {
     LayKetQuaHocTap: "https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap",
     LayDTBHocKy: "https://ketquahoctap.tdtu.edu.vn/Home/LayDTBHocKy",
     LayDiemTongHop: "https://ketquahoctap.tdtu.edu.vn/Home/LayDiemTongHop",
-    LayHocKy: "https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap",
+    LayHocKy_KetQuaHocTap: "https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap",
   };
 
   private semesterDefault!: ScoreSemester;
@@ -114,9 +114,9 @@ export class ScoreScraperService extends SchoolScraperService {
 
     const studentData = await this.getStudentData();
 
-    const semester = await this.client({
+    const { data } = await this.client({
       method: "GET",
-      url: this.SCORE_URL.LayHocKy,
+      url: this.SCORE_URL.LayHocKy_KetQuaHocTap,
       params: {
         mssv: this.mssv,
         namvt: studentData.namvt,
@@ -125,9 +125,9 @@ export class ScoreScraperService extends SchoolScraperService {
       },
     });
 
-    // globalize for webhook score message
-    process.env.SCORE_OPTIONS = JSON.stringify(semester);
+    // Globalize for webhook score message
+    process.env.SCORE_OPTIONS = JSON.stringify(data);
 
-    return semester;
+    return data;
   }
 }
