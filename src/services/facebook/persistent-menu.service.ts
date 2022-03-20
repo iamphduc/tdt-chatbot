@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
-import logger from "../../utils/logger";
+
+import logger from "../../configs/logger";
 
 // Doc : https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu
 

@@ -5,7 +5,7 @@ import { HelpMessageService } from "../message/help.message.service";
 import { TimetableMessageService } from "../message/timetable.message.service";
 import { ScoreMessageService } from "../message/score.message.service";
 
-import timezone from "../../utils/timezone";
+import timezone from "../../configs/timezone";
 
 export class WebhookService {
   private readonly sendAPIService: SendAPIService;

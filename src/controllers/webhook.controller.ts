@@ -10,7 +10,7 @@ import { TimetableMessageService } from "../services/message/timetable.message.s
 import { ScoreMessageService } from "../services/message/score.message.service";
 import { WebhookService } from "../services/webhook/webhook.service";
 
-import logger from "../utils/logger";
+import logger from "../configs/logger";
 
 export class WebhookController {
   // [GET] /webhook

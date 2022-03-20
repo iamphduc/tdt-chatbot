@@ -3,7 +3,8 @@ import { boundMethod } from "autobind-decorator";
 import { SendAPIService } from "../facebook/send-api.service";
 import { InforService } from "../infor/infor.service";
 import { TimetableScraperService } from "../scraper/timetable.scraper.service";
-import timezone from "../../utils/timezone";
+
+import timezone from "../../configs/timezone";
 
 export class TimetableMessageService {
   private readonly sender_psid: string;

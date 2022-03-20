@@ -1,12 +1,11 @@
-import dotenv from "dotenv";
 import express from "express";
 import path from "path";
 import morgan from "morgan";
 
-import { route } from "./routes";
-import logger, { stream } from "./utils/logger";
+import "./configs/env";
 
-dotenv.config();
+import logger, { stream } from "./configs/logger";
+import { route } from "./routes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
