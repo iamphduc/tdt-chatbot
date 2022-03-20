@@ -17,5 +17,5 @@ lerna-debug.log*
 # OS
 .DS_Store
 
-# Misc
-page-access.txt
+# Documentation
+*.txt

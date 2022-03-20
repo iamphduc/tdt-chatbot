@@ -17,12 +17,9 @@ lerna-debug.log*
 .git
 .gitignore
 
-# Screenshot file
-screenshots
-
 # Documentation
 *.md
+*.txt
 
-# Misc
-page-access.txt
+# Formatter
 .prettierrc
