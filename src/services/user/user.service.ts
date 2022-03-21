@@ -1,18 +1,18 @@
 import { injectable, inject } from "tsyringe";
 
 @injectable()
-export class InforService {
+export class UserService {
   private readonly sender_psid: string;
 
   constructor(@inject("sender_psid") sender_psid: string) {
     this.sender_psid = sender_psid;
   }
 
-  public set(mssv: string, pass: string) {
+  public setData(mssv: string, pass: string) {
     process.env[this.sender_psid] = JSON.stringify({ mssv, pass });
   }
 
-  public get() {
+  public getData() {
     return process.env[this.sender_psid] ? JSON.parse(process.env[this.sender_psid] || "") : "";
   }
 

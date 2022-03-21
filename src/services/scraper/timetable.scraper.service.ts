@@ -73,6 +73,7 @@ export class TimetableScraperService extends SchoolScraperService {
     return extractTimetable(data);
   }
 
+  // TODO Fix this!
   public async getNextWeek() {
     await super.login();
 

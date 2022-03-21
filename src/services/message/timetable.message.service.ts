@@ -2,7 +2,7 @@ import { boundMethod } from "autobind-decorator";
 import { injectable } from "tsyringe";
 
 import { SendAPIService } from "../facebook/send-api.service";
-import { InforService } from "../infor/infor.service";
+import { UserService } from "../user/user.service";
 import { TimetableScraperService } from "../scraper/timetable.scraper.service";
 
 import timezone from "../../configs/timezone";
@@ -11,12 +11,12 @@ import timezone from "../../configs/timezone";
 export class TimetableMessageService {
   constructor(
     private readonly sendAPIService: SendAPIService,
-    private readonly inforService: InforService
+    private readonly userService: UserService
   ) {}
 
   @boundMethod
   public async handleThisWeek() {
-    const { mssv, pass } = this.inforService.get();
+    const { mssv, pass } = this.userService.getData();
 
     await this.sendAPIService.call(`Đợi mình lấy lịch học của tuần này nhé!`);
 
@@ -34,7 +34,7 @@ export class TimetableMessageService {
 
   @boundMethod
   public async handleNextWeek() {
-    const { mssv, pass } = this.inforService.get();
+    const { mssv, pass } = this.userService.getData();
 
     await this.sendAPIService.call(`Đợi mình lấy lịch học của tuần sau nhé!`);
 
@@ -58,7 +58,7 @@ export class TimetableMessageService {
     };
     const dateText = specialDay[weekday] ?? weekday;
 
-    const { mssv, pass } = this.inforService.get();
+    const { mssv, pass } = this.userService.getData();
 
     await this.sendAPIService.call(
       `Đợi mình lấy lịch học ${dateText !== "CN" && dateText.toLowerCase()} nhé!`

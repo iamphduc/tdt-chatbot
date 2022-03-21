@@ -2,14 +2,14 @@ import { boundMethod } from "autobind-decorator";
 import { injectable } from "tsyringe";
 
 import { SendAPIService } from "../facebook/send-api.service";
-import { InforService } from "../infor/infor.service";
+import { UserService } from "../user/user.service";
 import { ScoreScraperService, ScoreSemester } from "../scraper/score.scraper.service";
 
 @injectable()
 export class ScoreMessageService {
   constructor(
     private readonly sendAPIService: SendAPIService,
-    private readonly inforService: InforService
+    private readonly userService: UserService
   ) {}
 
   private findTenHocKyFromNameTable(nameTable: string) {
@@ -36,7 +36,7 @@ export class ScoreMessageService {
 
   @boundMethod
   public async handleByNameTable(nameTable: string = process.env.SEMESTER_SCORE!) {
-    const { mssv, pass } = this.inforService.get();
+    const { mssv, pass } = this.userService.getData();
 
     const semesterName = this.findTenHocKyFromNameTable(nameTable);
     if (!semesterName) {
@@ -129,7 +129,7 @@ export class ScoreMessageService {
 
   @boundMethod
   public async handleOverall() {
-    const { mssv, pass } = this.inforService.get();
+    const { mssv, pass } = this.userService.getData();
 
     await this.sendAPIService.call(`Đợi mình lấy điểm tổng hợp nhé!`);
 

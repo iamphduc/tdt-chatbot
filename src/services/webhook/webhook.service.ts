@@ -1,10 +1,10 @@
 import { injectable } from "tsyringe";
 
 import { SendAPIService } from "../facebook/send-api.service";
-import { InforService } from "../infor/infor.service";
 import { HelpMessageService } from "../message/help.message.service";
 import { TimetableMessageService } from "../message/timetable.message.service";
 import { ScoreMessageService } from "../message/score.message.service";
+import { UserService } from "../user/user.service";
 
 import timezone from "../../configs/timezone";
 
@@ -12,10 +12,10 @@ import timezone from "../../configs/timezone";
 export class WebhookService {
   constructor(
     private readonly sendAPIService: SendAPIService,
-    private readonly inforService: InforService,
     private readonly helpMessageService: HelpMessageService,
     private readonly scoreMessageService: ScoreMessageService,
-    private readonly timetableMessageService: TimetableMessageService
+    private readonly timetableMessageService: TimetableMessageService,
+    private readonly userService: UserService
   ) {}
 
   public async handleMessage(received_message: any) {
@@ -38,7 +38,7 @@ export class WebhookService {
         return;
       }
 
-      this.inforService.set(mssvInput, passInput);
+      this.userService.setData(mssvInput, passInput);
 
       await this.sendAPIService.call(
         "Đã ghi nhận thông tin của bạn. Nhớ thu hồi tin nhắn để người khác không đọc được nhé!"
@@ -49,13 +49,13 @@ export class WebhookService {
 
     // Logout
     if (lowerMessage === "logout") {
-      this.inforService.delete();
+      this.userService.delete();
       await this.sendAPIService.call("Thông tin của bạn đã được xoá");
       return;
     }
 
     // Check if user has logged in
-    if (!this.isInforExisted()) {
+    if (!this.isUserLoggedIn()) {
       await this.sendAPIService.call(`Bạn vừa gửi: "${message}"`);
       await this.sendAPIService.call(`Bạn chưa đăng nhập!`);
       return;
@@ -98,6 +98,7 @@ export class WebhookService {
     }
 
     // Score with NameTable
+    // TODO Fix this!
     if (lowerMessage.includes("score- ")) {
       const nameTable = lowerMessage.slice(7);
       await this.scoreMessageService.handleByNameTable(nameTable);
@@ -122,8 +123,8 @@ export class WebhookService {
     return true;
   }
 
-  private isInforExisted() {
-    const { mssv, pass } = this.inforService.get();
+  private isUserLoggedIn() {
+    const { mssv, pass } = this.userService.getData();
     if (!mssv || !pass) return false;
     return true;
   }
@@ -149,7 +150,7 @@ export class WebhookService {
     }
 
     // Check if user has logged in
-    if (!this.isInforExisted()) {
+    if (!this.isUserLoggedIn()) {
       await this.sendAPIService.call(`Bạn vừa gửi: "${payload}"`);
       await this.sendAPIService.call(`Bạn chưa đăng nhập!`);
       return;
