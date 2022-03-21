@@ -56,7 +56,7 @@ export class SendAPIService {
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const response of responses) {
-      this.call(response);
+      await this.call(response);
     }
   }
 
