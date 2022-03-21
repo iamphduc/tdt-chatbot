@@ -1,11 +1,10 @@
 import { Router } from "express";
+import { container } from "tsyringe";
 
-import { SettingService } from "../services/web/setting.service";
 import { WebController } from "../controllers/web.controller";
 import { catchAsync } from "../utils/catch-async";
 
-const settingService = new SettingService();
-const webController = new WebController(settingService);
+const webController = container.resolve(WebController);
 
 const webRouter = Router();
 

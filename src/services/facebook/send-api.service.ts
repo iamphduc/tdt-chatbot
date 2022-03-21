@@ -1,15 +1,17 @@
 import axios, { AxiosInstance } from "axios";
+import { injectable, inject } from "tsyringe";
 
 interface Response {
   text: string;
 }
 
+@injectable()
 export class SendAPIService {
   private readonly URL: string = "https://graph.facebook.com/v2.6/me/messages";
   private readonly sender_psid: string;
   private readonly client: AxiosInstance;
 
-  constructor(sender_psid: string) {
+  constructor(@inject("sender_psid") sender_psid: string) {
     this.sender_psid = sender_psid;
     this.client = axios.create({
       headers: {

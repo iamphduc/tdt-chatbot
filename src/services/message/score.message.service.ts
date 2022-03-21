@@ -1,15 +1,16 @@
 import { boundMethod } from "autobind-decorator";
+import { injectable } from "tsyringe";
 
 import { SendAPIService } from "../facebook/send-api.service";
 import { InforService } from "../infor/infor.service";
 import { ScoreScraperService, ScoreSemester } from "../scraper/score.scraper.service";
 
+@injectable()
 export class ScoreMessageService {
-  private readonly sender_psid: string;
-
-  constructor(sender_psid: string) {
-    this.sender_psid = sender_psid;
-  }
+  constructor(
+    private readonly sendAPIService: SendAPIService,
+    private readonly inforService: InforService
+  ) {}
 
   private findTenHocKyFromNameTable(nameTable: string) {
     /*
@@ -35,29 +36,26 @@ export class ScoreMessageService {
 
   @boundMethod
   public async handleByNameTable(nameTable: string = process.env.SEMESTER_SCORE!) {
-    const sendAPIService = new SendAPIService(this.sender_psid);
-    const inforService = new InforService(this.sender_psid);
-
-    const { mssv, pass } = inforService.get();
-    const scoreScraperService = new ScoreScraperService(mssv, pass);
+    const { mssv, pass } = this.inforService.get();
 
     const semesterName = this.findTenHocKyFromNameTable(nameTable);
     if (!semesterName) {
-      sendAPIService.call(`Không tìm thấy bảng điểm ${semesterName}`);
+      this.sendAPIService.call(`Không tìm thấy bảng điểm ${semesterName}`);
       return;
     }
 
-    await sendAPIService.call(`Đợi mình lấy điểm ${semesterName} nhé!`);
+    await this.sendAPIService.call(`Đợi mình lấy điểm ${semesterName} nhé!`);
 
+    const scoreScraperService = new ScoreScraperService(mssv, pass);
     const scoreBySemester = await scoreScraperService.getBySemester();
 
     const scoreMessage = this.toMessage(scoreBySemester);
     if (!scoreMessage) {
-      sendAPIService.call(`Không tìm thấy bảng điểm ${semesterName}`);
+      this.sendAPIService.call(`Không tìm thấy bảng điểm ${semesterName}`);
       return;
     }
 
-    await sendAPIService.callMultiple(scoreMessage);
+    await this.sendAPIService.callMultiple(scoreMessage);
   }
 
   private toMessage(scoreArr: any[]) {
@@ -131,23 +129,20 @@ export class ScoreMessageService {
 
   @boundMethod
   public async handleOverall() {
-    const sendAPIService = new SendAPIService(this.sender_psid);
-    const inforService = new InforService(this.sender_psid);
+    const { mssv, pass } = this.inforService.get();
 
-    const { mssv, pass } = inforService.get();
+    await this.sendAPIService.call(`Đợi mình lấy điểm tổng hợp nhé!`);
+
     const scoreScraperService = new ScoreScraperService(mssv, pass);
-
-    await sendAPIService.call(`Đợi mình lấy điểm tổng hợp nhé!`);
-
     const scoreOverall = await scoreScraperService.getOverall();
 
     const scoreMessage = this.toOverallMessage(scoreOverall);
     if (!scoreMessage) {
-      sendAPIService.call(`Không tìm thấy bảng điểm tổng hợp`);
+      this.sendAPIService.call(`Không tìm thấy bảng điểm tổng hợp`);
       return;
     }
 
-    await sendAPIService.callMultiple(scoreMessage);
+    await this.sendAPIService.callMultiple(scoreMessage);
   }
 
   private toOverallMessage(scoreOverallArr: any[]) {
@@ -206,8 +201,6 @@ export class ScoreMessageService {
       });
     }
 
-    const sendAPIService = new SendAPIService(this.sender_psid);
-
-    await sendAPIService.callGenericTemplate(elements);
+    await this.sendAPIService.callGenericTemplate(elements);
   }
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { boundMethod } from "autobind-decorator";
+import { injectable } from "tsyringe";
 
 import { SettingService } from "../services/web/setting.service";
 
@@ -16,12 +17,9 @@ interface TimetableSemester {
   isSelected: boolean;
 }
 
+@injectable()
 export class WebController {
-  private readonly settingService: SettingService;
-
-  constructor(settingService: SettingService) {
-    this.settingService = settingService;
-  }
+  constructor(private readonly settingService: SettingService) {}
 
   // [GET] /
   public async renderViewHome(req: Request, res: Response) {

@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Request, Response } from "express";
 import { boundMethod } from "autobind-decorator";
+import { container } from "tsyringe";
 
 import { PersistentMenuService } from "../services/facebook/persistent-menu.service";
-import { SendAPIService } from "../services/facebook/send-api.service";
-import { InforService } from "../services/infor/infor.service";
-import { HelpMessageService } from "../services/message/help.message.service";
-import { TimetableMessageService } from "../services/message/timetable.message.service";
-import { ScoreMessageService } from "../services/message/score.message.service";
 import { WebhookService } from "../services/webhook/webhook.service";
 
 import logger from "../configs/logger";
@@ -58,18 +54,9 @@ export class WebhookController {
         // Get the sender PSID
         const sender_psid = webhook_event.sender.id;
 
-        const sendAPIService = new SendAPIService(sender_psid);
-        const inforService = new InforService(sender_psid);
-        const helpMessageService = new HelpMessageService(sender_psid);
-        const scoreMessageService = new ScoreMessageService(sender_psid);
-        const timetableMessageService = new TimetableMessageService(sender_psid);
-        const webhookService = new WebhookService(
-          sendAPIService,
-          inforService,
-          helpMessageService,
-          scoreMessageService,
-          timetableMessageService
-        );
+        container.register("sender_psid", { useValue: sender_psid });
+
+        const webhookService = container.resolve(WebhookService);
 
         // Check if the event is a message
         if (webhook_event.message) {

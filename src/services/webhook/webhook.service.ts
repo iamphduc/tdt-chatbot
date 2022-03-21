@@ -1,32 +1,22 @@
+import { injectable } from "tsyringe";
+
 import { SendAPIService } from "../facebook/send-api.service";
 import { InforService } from "../infor/infor.service";
-
 import { HelpMessageService } from "../message/help.message.service";
 import { TimetableMessageService } from "../message/timetable.message.service";
 import { ScoreMessageService } from "../message/score.message.service";
 
 import timezone from "../../configs/timezone";
 
+@injectable()
 export class WebhookService {
-  private readonly sendAPIService: SendAPIService;
-  private readonly inforService: InforService;
-  private readonly helpMessageService: HelpMessageService;
-  private readonly scoreMessageService: ScoreMessageService;
-  private readonly timetableMessageService: TimetableMessageService;
-
   constructor(
-    sendAPIService: SendAPIService,
-    inforService: InforService,
-    helpMessageService: HelpMessageService,
-    scoreMessageService: ScoreMessageService,
-    timetableMessageService: TimetableMessageService
-  ) {
-    this.sendAPIService = sendAPIService;
-    this.inforService = inforService;
-    this.helpMessageService = helpMessageService;
-    this.scoreMessageService = scoreMessageService;
-    this.timetableMessageService = timetableMessageService;
-  }
+    private readonly sendAPIService: SendAPIService,
+    private readonly inforService: InforService,
+    private readonly helpMessageService: HelpMessageService,
+    private readonly scoreMessageService: ScoreMessageService,
+    private readonly timetableMessageService: TimetableMessageService
+  ) {}
 
   public async handleMessage(received_message: any) {
     const message = received_message.text;

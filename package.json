@@ -25,7 +25,9 @@
     "express": "^4.17.1",
     "moment-timezone": "^0.5.33",
     "morgan": "^1.10.0",
+    "reflect-metadata": "^0.1.13",
     "tough-cookie": "^4.0.0",
+    "tsyringe": "^4.6.0",
     "winston": "^3.4.0"
   },
   "devDependencies": {

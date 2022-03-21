@@ -1,7 +1,10 @@
+import { injectable, inject } from "tsyringe";
+
+@injectable()
 export class InforService {
   private readonly sender_psid: string;
 
-  constructor(sender_psid: string) {
+  constructor(@inject("sender_psid") sender_psid: string) {
     this.sender_psid = sender_psid;
   }
 

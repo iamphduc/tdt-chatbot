@@ -1,18 +1,14 @@
 import { boundMethod } from "autobind-decorator";
+import { injectable } from "tsyringe";
 
 import { SendAPIService } from "../facebook/send-api.service";
 
+@injectable()
 export class HelpMessageService {
-  private readonly sender_psid: string;
-
-  constructor(sender_psid: string) {
-    this.sender_psid = sender_psid;
-  }
+  constructor(private readonly sendAPIService: SendAPIService) {}
 
   @boundMethod
   public async handleHelp() {
-    const sendAPIService = new SendAPIService(this.sender_psid);
-
     const scoreSemesterList = JSON.parse(process.env.SCORE_OPTIONS || "");
 
     const helpMessage = this.toMessage(scoreSemesterList);
@@ -34,7 +30,7 @@ export class HelpMessageService {
       payload: "<POSTBACK_PAYLOAD>",
     }));
 
-    await sendAPIService.callQuickReplies(helpMessage, quickReplies);
+    await this.sendAPIService.callQuickReplies(helpMessage, quickReplies);
   }
 
   private toMessage(scoreSemesterList: any[]) {
