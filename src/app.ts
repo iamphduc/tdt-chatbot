@@ -4,24 +4,28 @@ import path from "path";
 import morgan from "morgan";
 
 import "./configs/env";
+import "./configs/redis";
 import logger, { stream } from "./configs/logger";
 import { route } from "./routes";
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+async function bootstrap() {
+  const app = express();
+  const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan("tiny", { stream }));
-app.use(express.static(path.join(__dirname, "../public")));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(morgan("tiny", { stream }));
+  app.use(express.static(path.join(__dirname, "../public")));
 
-// View Engine
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "../views"));
+  // View Engine
+  app.set("view engine", "ejs");
+  app.set("views", path.join(__dirname, "../views"));
 
-// Routes
-route(app);
+  // Routes
+  route(app);
 
-app.listen(PORT, () => {
-  logger.info(`App listen: http://localhost:${PORT}`);
-});
+  app.listen(PORT, () => {
+    logger.info(`App listen: http://localhost:${PORT}`);
+  });
+}
+bootstrap();
