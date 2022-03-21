@@ -40,14 +40,14 @@ export class ScoreMessageService {
 
     const semesterName = this.findTenHocKyFromNameTable(nameTable);
     if (!semesterName) {
-      this.sendAPIService.call(`Không tìm thấy bảng điểm ${semesterName}`);
+      this.sendAPIService.call(`Bảng điểm không hợp lệ`);
       return;
     }
 
     await this.sendAPIService.call(`Đợi mình lấy điểm ${semesterName} nhé!`);
 
     const scoreScraperService = new ScoreScraperService(mssv, pass);
-    const scoreBySemester = await scoreScraperService.getBySemester();
+    const scoreBySemester = await scoreScraperService.getBySemester(nameTable);
 
     const scoreMessage = this.toMessage(scoreBySemester);
     if (!scoreMessage) {

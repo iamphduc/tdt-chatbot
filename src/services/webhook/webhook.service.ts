@@ -98,9 +98,8 @@ export class WebhookService {
     }
 
     // Score with NameTable
-    // TODO Fix this!
-    if (lowerMessage.includes("score- ")) {
-      const nameTable = lowerMessage.slice(7);
+    if (lowerMessage.includes("score -")) {
+      const nameTable = message.slice(7);
       await this.scoreMessageService.handleByNameTable(nameTable);
       return;
     }
