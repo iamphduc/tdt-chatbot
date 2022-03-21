@@ -30,21 +30,24 @@ export class WebController {
   @boundMethod
   public async renderViewSetting(req: Request, res: Response) {
     const data = await this.settingService.getDataForViewSetting();
+    const chosenSemester = this.settingService.getChosenSemester();
 
     let scoreSemesterList: ScoreSemester[] = [];
     let timetableSemesterList: TimetableSemester[] = [];
     let defaultScoreSemester = "";
     let defaultTimetableSemester = "";
-    let chosenScoreSemester = "";
-    let chosenTimetableSemester = "";
-
     if (data) {
       scoreSemesterList = data.scoreSemesterList ?? [];
       timetableSemesterList = data.timetableSemesterList ?? [];
       defaultScoreSemester = data.defaultScoreSemester ?? "Missing value";
       defaultTimetableSemester = data.defaultTimetableSemester ?? "Missing value";
-      chosenScoreSemester = data.chosenScoreSemester ?? "";
-      chosenTimetableSemester = data.chosenTimetableSemester ?? "";
+    }
+
+    let chosenScoreSemester = "";
+    let chosenTimetableSemester = "";
+    if (chosenSemester) {
+      chosenScoreSemester = chosenSemester.chosenScoreSemester ?? "";
+      chosenTimetableSemester = chosenSemester.chosenTimetableSemester ?? "";
     }
 
     res.render("setting", {

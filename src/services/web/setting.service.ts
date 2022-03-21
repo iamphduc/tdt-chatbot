@@ -22,23 +22,27 @@ export class SettingService {
       const firstScoreSemester = scoreSemesterList[0];
       const selectedTimetableSemester = timetableSemesterList.find((ele) => ele.isSelected);
 
-      const chosenScoreSemester = process.env.SEMESTER_SCORE || firstScoreSemester.NameTable;
-      const chosenTimetableSemester =
-        process.env.SEMESTER_SCHEDULE || selectedTimetableSemester.value;
-
-      this.setChosenSemester(chosenScoreSemester, chosenTimetableSemester);
+      this.setChosenSemester(
+        process.env.SEMESTER_SCORE ?? firstScoreSemester.NameTable,
+        process.env.SEMESTER_SCHEDULE ?? selectedTimetableSemester.value
+      );
 
       return {
         scoreSemesterList,
         timetableSemesterList,
         defaultScoreSemester: firstScoreSemester.TenHocKy,
         defaultTimetableSemester: selectedTimetableSemester.text,
-        chosenScoreSemester: process.env.SEMESTER_SCORE,
-        chosenTimetableSemester: process.env.SEMESTER_SCHEDULE,
       };
     }
 
     return null;
+  }
+
+  public getChosenSemester() {
+    return {
+      chosenScoreSemester: process.env.SEMESTER_SCORE,
+      chosenTimetableSemester: process.env.SEMESTER_SCHEDULE,
+    };
   }
 
   public setChosenSemester(chosenScoreSemester: string, chosenTimetableSemester: string) {
