@@ -7,6 +7,9 @@ async function connectRedis() {
 
   client.on("error", (err) => {
     logger.error(`Redis Error: ${err}`);
+
+    // Stop process without app crash
+    process.exit(1);
   });
 
   client.on("connect", () => {
