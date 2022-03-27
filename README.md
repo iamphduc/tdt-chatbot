@@ -9,10 +9,11 @@ This project is a Facebook chatbot that sends schedule and score scraped from TD
 - Create a `.env` file
 
 ```
-PAGE_ACCESS_TOKEN=
-VERIFY_TOKEN=
-MSSV=
-PASS=
+PAGE_ACCESS_TOKEN =
+VERIFY_TOKEN =
+REDIS_URL =
+MSSV =
+PASS =
 ```
 
 - To run app in production
@@ -32,9 +33,7 @@ _Always set up Semester in `http://localhost:5000/setting` when your server star
 
 ## Why did I do this project?
 
-The main purpose is to practice scraping and make a Facebook chatbot. 
-
-This app also makes my student life more convenient.
+The main target is to practice scraping and make a Facebook chatbot.
 
 ## Screenshots
 

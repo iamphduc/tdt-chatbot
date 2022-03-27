@@ -1,5 +1,6 @@
 /* eslint-disable arrow-body-style */
 import winston from "winston";
+import path from "path";
 
 const { createLogger, format, transports } = winston;
 
@@ -34,13 +35,13 @@ const logger = createLogger({
 
     // Write all logs with level `error` and below to `error.log`
     new transports.File({
-      filename: "logs/error.log",
+      filename: path.join(__dirname, "../../logs/error.log"),
       level: "error",
     }),
 
     // Write all logs with level `debug` and below to `debug.log`
     new transports.File({
-      filename: "logs/debug.log",
+      filename: path.join(__dirname, "../../logs/debug.log"),
     }),
   ],
 });

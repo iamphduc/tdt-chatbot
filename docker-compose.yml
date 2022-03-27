@@ -1,9 +1,29 @@
-version: "3.8"
+version: "3.9"
 services:
+  redis:
+    image: redis:6.2-alpine
+    container_name: tdt-chatbot_redis
+    expose:
+      - 6379
+    networks:
+      - tdt-chatbot
+
   app:
-    image: iamphduc/tdt-chatbot
-    container_name: tdt-chatbot
     build: .
-    env_file: .env
+    image: iamphduc/tdt-chatbot
+    container_name: tdt-chatbot_app
     ports:
       - 5000:5000
+    networks:
+      - tdt-chatbot
+    links:
+      - redis
+    env_file:
+      - .env.prod
+    environment:
+      - NODE_ENV=production
+
+networks:
+  tdt-chatbot:
+    external:
+      name: tdt-chatbot_network
