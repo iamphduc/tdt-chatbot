@@ -2,15 +2,25 @@ import axios, { AxiosInstance } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
+import { getter, setter } from "../../decorators/getter-setter";
+
 export class SchoolScraperService {
-  private readonly LOGIN_URL: string = "https://stdportal.tdtu.edu.vn/Login/SignIn";
+  [x: string]: any;
+
+  @getter
+  @setter
   protected readonly mssv: string;
+
+  @getter
+  @setter
   protected readonly pass: string;
+
+  private readonly LOGIN_URL: string = "https://stdportal.tdtu.edu.vn/Login/SignIn";
   protected readonly client: AxiosInstance;
 
-  constructor(mssv: string, pass: string) {
-    this.mssv = mssv;
-    this.pass = pass;
+  constructor(mssv?: string, pass?: string) {
+    this.mssv = mssv ?? "";
+    this.pass = pass ?? "";
 
     this.client = wrapper(
       axios.create({

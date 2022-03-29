@@ -1,9 +1,10 @@
 import { Router } from "express";
+import { container } from "tsyringe";
 
 import { ApiController } from "../controllers/api.controller";
 import { catchAsync } from "../utils/catch-async";
 
-const apiController = new ApiController();
+const apiController = container.resolve(ApiController);
 
 const apiRouter = Router();
 
