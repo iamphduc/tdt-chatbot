@@ -1,43 +1,37 @@
 # TDT Chatbot
 
-This project is a Facebook chatbot that sends schedule and score scraped from TDTU Student Portal.
+A messenger chatbot sends timetable and score scraped from TDTU Student Portal.
 
 ## Getting started
 
-- Follow this guide: [https://developers.facebook.com/docs/messenger-platform/getting-started](https://developers.facebook.com/docs/messenger-platform/getting-started)
+- Messenger platform: https://developers.facebook.com/docs/messenger-platform/getting-started
 
-- Create a `.env` file
+- Redis in WSL: https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-database#install-redis
+
+- File `.env` 
 
 ```
-PAGE_ACCESS_TOKEN =
-VERIFY_TOKEN =
-REDIS_URL =
-MSSV =
-PASS =
+PAGE_ACCESS_TOKEN=
+VERIFY_TOKEN=
+REDIS_URL=
+MSSV=
+PASS=
 ```
 
-- To run app in production
+## Running the app
 
 ```bash
+# Production
 $ yarn build
 $ yarn start
-```
 
-- To run app in development
-
-```bash
+# Development
 $ yarn dev
 ```
 
 _Always set up Semester in `http://localhost:5000/setting` when your server starts._
 
-## Why did I do this project?
-
-The main target is to practice scraping and make a Facebook chatbot.
-
 ## Screenshots
-
-Click on the image to view full size.
 
 | Help                                             | Menu                                              |
 | ------------------------------------------------ | ------------------------------------------------- |
