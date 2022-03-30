@@ -1,17 +1,28 @@
+import { injectable } from "tsyringe";
+
 import { ScoreScraperService } from "../scraper/score.scraper.service";
 import { TimetableScraperService } from "../scraper/timetable.scraper.service";
 
+@injectable()
 export class SettingService {
+  constructor(
+    private readonly scoreScraperService: ScoreScraperService,
+    private readonly timetableScraperService: TimetableScraperService
+  ) {}
+
   public async getDataForViewSetting() {
     const mssv = process.env.MSSV!;
     const pass = process.env.PASS!;
 
-    const scoreScraperService = new ScoreScraperService(mssv, pass);
-    const timetableScraperService = new TimetableScraperService(mssv, pass);
+    this.scoreScraperService.setMssv(mssv);
+    this.scoreScraperService.setPass(pass);
+
+    this.timetableScraperService.setMssv(mssv);
+    this.timetableScraperService.setPass(pass);
 
     const [timetableSemesterList, scoreSemesterList] = await Promise.all([
-      timetableScraperService.getSemester(),
-      scoreScraperService.getSemester(),
+      this.timetableScraperService.getSemester(),
+      this.scoreScraperService.getSemester(),
     ]);
 
     if (!timetableSemesterList || !scoreSemesterList) {

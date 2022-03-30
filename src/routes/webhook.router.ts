@@ -1,8 +1,9 @@
 import { Router } from "express";
+import { container } from "tsyringe";
 
 import { WebhookController } from "../controllers/webhook.controller";
 
-const webhookController = new WebhookController();
+const webhookController = container.resolve(WebhookController);
 
 const webhookRouter = Router();
 

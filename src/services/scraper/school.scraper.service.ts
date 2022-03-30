@@ -4,9 +4,14 @@ import { CookieJar } from "tough-cookie";
 
 import { getter, setter } from "../../decorators/getter-setter";
 
-export class SchoolScraperService {
-  [x: string]: any;
+export interface SchoolScraperService {
+  getMssv: () => string;
+  setMssv: (mssv: string) => void;
+  getPass: () => string;
+  setPass: (pass: string) => void;
+}
 
+export class SchoolScraperService {
   @getter
   @setter
   protected readonly mssv: string;

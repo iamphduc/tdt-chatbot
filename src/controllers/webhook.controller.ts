@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Request, Response } from "express";
 import { boundMethod } from "autobind-decorator";
-import { container } from "tsyringe";
+import { injectable, container } from "tsyringe";
 
 import { PersistentMenuService } from "../services/facebook/persistent-menu.service";
 import { WebhookService } from "../services/webhook/webhook.service";
 
 import logger from "../configs/logger";
 
+@injectable()
 export class WebhookController {
+  constructor(private readonly persistentMenuService: PersistentMenuService) {}
+
   // [GET] /webhook
   @boundMethod
   public connect(req: Request, res: Response) {
@@ -27,8 +30,7 @@ export class WebhookController {
         logger.info("WEBHOOK_VERIFIED");
 
         // Set up persistent menu
-        const persistentMenuService = new PersistentMenuService();
-        persistentMenuService.call();
+        this.persistentMenuService.call();
 
         res.status(200).send(challenge);
       } else {
