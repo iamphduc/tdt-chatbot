@@ -13,12 +13,19 @@ interface ASPNETVariable {
 
 export class TimetableScraperService extends SchoolScraperService {
   private readonly TIMETABLE_URL: string = "https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx";
+  private searchParams: string = "";
 
   private async getASPNETVariable() {
-    const { data } = await this.client({
+    const {
+      data,
+      request: { path },
+    } = await this.client({
       method: "GET",
       url: this.TIMETABLE_URL,
     });
+
+    // eslint-disable-next-line prefer-destructuring
+    this.searchParams = path.split("?")[1];
 
     const $ = cheerio.load(data);
     const extracted: ASPNETVariable = {
@@ -55,7 +62,7 @@ export class TimetableScraperService extends SchoolScraperService {
 
     await this.client({
       method: "POST",
-      url: this.TIMETABLE_URL,
+      url: `${this.TIMETABLE_URL}?${this.searchParams}`,
       data: payload,
     });
   }
