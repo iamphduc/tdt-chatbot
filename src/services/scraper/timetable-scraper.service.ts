@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 
 import { TDTU_URL } from "@configs/url";
-import { SchoolScraperService } from "./school.scraper.service";
+import { SchoolScraperService } from "./school-scraper.service";
 import { extractTimetable, extractTimetableSemester } from "./timetable.cheerio";
 
 interface ASPNETVariable {

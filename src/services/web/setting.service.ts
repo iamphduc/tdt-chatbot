@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
 
-import { ScoreScraperService } from "../scraper/score.scraper.service";
-import { TimetableScraperService } from "../scraper/timetable.scraper.service";
+import { ScoreScraperService } from "../scraper/score-scraper.service";
+import { TimetableScraperService } from "../scraper/timetable-scraper.service";
 
 @injectable()
 export class SettingService {

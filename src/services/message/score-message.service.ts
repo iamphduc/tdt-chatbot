@@ -3,7 +3,7 @@ import { injectable } from "tsyringe";
 
 import { SendAPIService } from "../facebook/send-api.service";
 import { UserService } from "../user/user.service";
-import { ScoreScraperService, ScoreSemester } from "../scraper/score.scraper.service";
+import { ScoreScraperService, ScoreSemester } from "../scraper/score-scraper.service";
 
 @injectable()
 export class ScoreMessageService {

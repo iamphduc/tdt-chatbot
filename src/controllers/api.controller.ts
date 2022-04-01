@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { boundMethod } from "autobind-decorator";
 import { injectable } from "tsyringe";
 
-import { ScoreScraperService } from "../services/scraper/score.scraper.service";
-import { TimetableScraperService } from "../services/scraper/timetable.scraper.service";
+import { ScoreScraperService } from "../services/scraper/score-scraper.service";
+import { TimetableScraperService } from "../services/scraper/timetable-scraper.service";
 
 @injectable()
 export class ApiController {
