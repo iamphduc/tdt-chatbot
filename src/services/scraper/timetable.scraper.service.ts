@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 
+import { TDTU_URL } from "../../configs/url";
 import { SchoolScraperService } from "./school.scraper.service";
 import { extractTimetable, extractTimetableSemester } from "./timetable.cheerio";
 
@@ -12,7 +13,6 @@ interface ASPNETVariable {
 }
 
 export class TimetableScraperService extends SchoolScraperService {
-  private readonly TIMETABLE_URL: string = "https://lichhoc-lichthi.tdtu.edu.vn/tkb2.aspx";
   private searchParams: string = "";
 
   private async getASPNETVariable() {
@@ -21,7 +21,7 @@ export class TimetableScraperService extends SchoolScraperService {
       request: { path },
     } = await this.client({
       method: "GET",
-      url: this.TIMETABLE_URL,
+      url: TDTU_URL.timetable,
     });
 
     // eslint-disable-next-line prefer-destructuring
@@ -62,7 +62,7 @@ export class TimetableScraperService extends SchoolScraperService {
 
     await this.client({
       method: "POST",
-      url: `${this.TIMETABLE_URL}?${this.searchParams}`,
+      url: `${TDTU_URL.timetable}?${this.searchParams}`,
       data: payload,
     });
   }
@@ -74,7 +74,7 @@ export class TimetableScraperService extends SchoolScraperService {
 
     const { data } = await this.client({
       method: "GET",
-      url: this.TIMETABLE_URL,
+      url: TDTU_URL.timetable,
     });
 
     return extractTimetable(data);
@@ -89,7 +89,7 @@ export class TimetableScraperService extends SchoolScraperService {
 
     const { data } = await this.client({
       method: "GET",
-      url: this.TIMETABLE_URL,
+      url: TDTU_URL.timetable,
     });
 
     return extractTimetable(data);
@@ -100,7 +100,7 @@ export class TimetableScraperService extends SchoolScraperService {
 
     const { data } = await this.client({
       method: "GET",
-      url: this.TIMETABLE_URL,
+      url: TDTU_URL.timetable,
     });
 
     return extractTimetableSemester(data);

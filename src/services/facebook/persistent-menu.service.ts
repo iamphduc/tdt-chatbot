@@ -1,11 +1,11 @@
 import axios, { AxiosInstance } from "axios";
 
 import logger from "../../configs/logger";
+import { FB_URL } from "../../configs/url";
 
 // Doc : https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu
 
 export class PersistentMenuService {
-  private readonly URL: string = "https://graph.facebook.com/v12.0/me/messenger_profile";
   private readonly client: AxiosInstance;
 
   constructor() {
@@ -72,7 +72,7 @@ export class PersistentMenuService {
 
     await this.client({
       method: "POST",
-      url: this.URL,
+      url: FB_URL.persistentMenu,
       params: { access_token: process.env.PAGE_ACCESS_TOKEN },
       data: menuBody,
     }).then(() => {

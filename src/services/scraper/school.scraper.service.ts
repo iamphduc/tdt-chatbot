@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
+import { TDTU_URL } from "../../configs/url";
 import { getter, setter } from "../../decorators/getter-setter";
 
 export interface SchoolScraperService {
@@ -20,7 +21,6 @@ export class SchoolScraperService {
   @setter
   protected readonly pass: string;
 
-  private readonly LOGIN_URL: string = "https://stdportal.tdtu.edu.vn/Login/SignIn";
   protected readonly client: AxiosInstance;
 
   constructor(mssv?: string, pass?: string) {
@@ -47,7 +47,7 @@ export class SchoolScraperService {
 
     const { data } = await this.client({
       method: "POST",
-      url: this.LOGIN_URL,
+      url: TDTU_URL.login,
       data: loginData,
     });
 

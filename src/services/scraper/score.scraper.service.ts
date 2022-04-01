@@ -1,14 +1,7 @@
 import * as cheerio from "cheerio";
 
+import { TDTU_URL } from "../../configs/url";
 import { SchoolScraperService } from "./school.scraper.service";
-
-interface ScoreUrl {
-  TrangChu: string;
-  LayKetQuaHocTap: string;
-  LayDTBHocKy: string;
-  LayDiemTongHop: string;
-  LayHocKy_KetQuaHocTap: string;
-}
 
 export interface ScoreSemester {
   id: number;
@@ -18,14 +11,6 @@ export interface ScoreSemester {
 }
 
 export class ScoreScraperService extends SchoolScraperService {
-  private readonly SCORE_URL: ScoreUrl = {
-    TrangChu: "https://ketquahoctap.tdtu.edu.vn",
-    LayKetQuaHocTap: "https://ketquahoctap.tdtu.edu.vn/Home/LayKetQuaHocTap",
-    LayDTBHocKy: "https://ketquahoctap.tdtu.edu.vn/Home/LayDTBHocKy",
-    LayDiemTongHop: "https://ketquahoctap.tdtu.edu.vn/Home/LayDiemTongHop",
-    LayHocKy_KetQuaHocTap: "https://ketquahoctap.tdtu.edu.vn/Home/LayHocKy_KetQuaHocTap",
-  };
-
   private semesterDefault!: ScoreSemester;
   private semesterList!: ScoreSemester[];
 
@@ -45,7 +30,7 @@ export class ScoreScraperService extends SchoolScraperService {
   private async getStudentData() {
     const { data } = await this.client({
       method: "GET",
-      url: this.SCORE_URL.TrangChu,
+      url: TDTU_URL.score.TrangChu,
     });
 
     const $ = cheerio.load(data);
@@ -65,7 +50,7 @@ export class ScoreScraperService extends SchoolScraperService {
 
     const { data: semesterScore } = await this.client({
       method: "GET",
-      url: this.SCORE_URL.LayKetQuaHocTap,
+      url: TDTU_URL.score.LayKetQuaHocTap,
       params: {
         mssv: this.mssv,
         nametable: semester,
@@ -76,7 +61,7 @@ export class ScoreScraperService extends SchoolScraperService {
 
     const { data: GPA } = await this.client({
       method: "GET",
-      url: this.SCORE_URL.LayDTBHocKy,
+      url: TDTU_URL.score.LayDTBHocKy,
       params: {
         lop: studentData.lop,
         mssv: this.mssv,
@@ -97,7 +82,7 @@ export class ScoreScraperService extends SchoolScraperService {
 
     const { data } = await this.client({
       method: "GET",
-      url: this.SCORE_URL.LayDiemTongHop,
+      url: TDTU_URL.score.LayDiemTongHop,
       params: {
         mssv: this.mssv,
         namvt: studentData.namvt,
@@ -116,7 +101,7 @@ export class ScoreScraperService extends SchoolScraperService {
 
     const { data } = await this.client({
       method: "GET",
-      url: this.SCORE_URL.LayHocKy_KetQuaHocTap,
+      url: TDTU_URL.score.LayHocKy_KetQuaHocTap,
       params: {
         mssv: this.mssv,
         namvt: studentData.namvt,

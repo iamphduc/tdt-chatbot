@@ -1,13 +1,14 @@
 import axios, { AxiosInstance } from "axios";
 import { injectable, inject } from "tsyringe";
 
+import { FB_URL } from "../../configs/url";
+
 interface Response {
   text: string;
 }
 
 @injectable()
 export class SendAPIService {
-  private readonly URL: string = "https://graph.facebook.com/v2.6/me/messages";
   private readonly sender_psid: string;
   private readonly client: AxiosInstance;
 
@@ -36,7 +37,7 @@ export class SendAPIService {
 
     await this.client({
       method: "POST",
-      url: this.URL,
+      url: FB_URL.message,
       params: { access_token: process.env.PAGE_ACCESS_TOKEN },
       data: requestBody,
     });
@@ -78,7 +79,7 @@ export class SendAPIService {
 
     await this.client({
       method: "POST",
-      url: this.URL,
+      url: FB_URL.message,
       params: { access_token: process.env.PAGE_ACCESS_TOKEN },
       data: requestBody,
     });
@@ -103,7 +104,7 @@ export class SendAPIService {
 
     await this.client({
       method: "POST",
-      url: this.URL,
+      url: FB_URL.message,
       params: { access_token: process.env.PAGE_ACCESS_TOKEN },
       data: requestBody,
     });
@@ -122,7 +123,7 @@ export class SendAPIService {
 
     await this.client({
       method: "POST",
-      url: this.URL,
+      url: FB_URL.message,
       params: { access_token: process.env.PAGE_ACCESS_TOKEN },
       data: requestBody,
     });
