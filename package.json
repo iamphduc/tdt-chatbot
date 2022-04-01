@@ -5,9 +5,9 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "node dist/app.js",
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon -r tsconfig-paths/register src/app.ts",
     "prebuild": "rimraf dist",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\""
@@ -48,7 +48,8 @@
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.4.0",
-    "tsconfig-paths": "^3.12.0",
+    "tsc-alias": "^1.6.5",
+    "tsconfig-paths": "^3.14.1",
     "typescript": "^4.5.4"
   }
 }

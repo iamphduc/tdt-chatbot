@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { injectable, inject } from "tsyringe";
 
-import { FB_URL } from "../../configs/url";
+import { FB_URL } from "@configs/url";
 
 interface Response {
   text: string;

@@ -1,11 +1,10 @@
 import { boundMethod } from "autobind-decorator";
 import { injectable } from "tsyringe";
 
+import timezone from "@configs/timezone";
 import { SendAPIService } from "../facebook/send-api.service";
 import { UserService } from "../user/user.service";
 import { TimetableScraperService } from "../scraper/timetable.scraper.service";
-
-import timezone from "../../configs/timezone";
 
 @injectable()
 export class TimetableMessageService {

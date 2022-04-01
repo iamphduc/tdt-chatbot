@@ -2,8 +2,8 @@ import axios, { AxiosInstance } from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
-import { TDTU_URL } from "../../configs/url";
-import { getter, setter } from "../../decorators/getter-setter";
+import { TDTU_URL } from "@configs/url";
+import { getter, setter } from "@decorators/getter-setter";
 
 export interface SchoolScraperService {
   getMssv: () => string;

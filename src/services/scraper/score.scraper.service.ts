@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 
-import { TDTU_URL } from "../../configs/url";
+import { TDTU_URL } from "@configs/url";
 import { SchoolScraperService } from "./school.scraper.service";
 
 export interface ScoreSemester {

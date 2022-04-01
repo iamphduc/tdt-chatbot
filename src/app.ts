@@ -3,9 +3,9 @@ import express from "express";
 import path from "path";
 import morgan from "morgan";
 
-import "./configs/env";
-import "./configs/redis";
-import logger, { stream } from "./configs/logger";
+import "@configs/env";
+import "@configs/redis";
+import logger, { stream } from "@configs/logger";
 import { route } from "./routes";
 
 async function bootstrap() {

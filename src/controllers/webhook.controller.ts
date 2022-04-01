@@ -3,10 +3,9 @@ import { Request, Response } from "express";
 import { boundMethod } from "autobind-decorator";
 import { injectable, container } from "tsyringe";
 
+import logger from "@configs/logger";
 import { PersistentMenuService } from "../services/facebook/persistent-menu.service";
 import { WebhookService } from "../services/webhook/webhook.service";
-
-import logger from "../configs/logger";
 
 @injectable()
 export class WebhookController {

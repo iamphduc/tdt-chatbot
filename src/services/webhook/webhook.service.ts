@@ -1,12 +1,11 @@
 import { injectable } from "tsyringe";
 
+import timezone from "@configs/timezone";
 import { SendAPIService } from "../facebook/send-api.service";
 import { HelpMessageService } from "../message/help.message.service";
 import { TimetableMessageService } from "../message/timetable.message.service";
 import { ScoreMessageService } from "../message/score.message.service";
 import { UserService } from "../user/user.service";
-
-import timezone from "../../configs/timezone";
 
 @injectable()
 export class WebhookService {

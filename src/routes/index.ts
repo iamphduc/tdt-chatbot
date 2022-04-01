@@ -1,10 +1,9 @@
 import { Application, Request, Response, NextFunction } from "express";
 
+import logger from "@configs/logger";
 import { apiRouter } from "./api.router";
 import { webRouter } from "./web.router";
 import { webhookRouter } from "./webhook.router";
-
-import logger from "../configs/logger";
 
 export const route = (app: Application) => {
   app.use("/", webRouter);

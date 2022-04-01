@@ -6,14 +6,18 @@
     /* Modules */
     "module": "commonjs",
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": "src",
+    "paths": {
+      "@configs/*": ["configs/*"],
+      "@decorators/*": ["decorators/*"]
+    },
 
     /* JavaScript Support */
     "allowJs": true,
 
     /* Emit */
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "dist",
     "removeComments": true,
 
     /* Interop Constraints */
