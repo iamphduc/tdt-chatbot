@@ -13,6 +13,7 @@ WORKDIR /app
 COPY --from=ts-compiler /app/package.json /app/yarn.lock ./
 COPY --from=ts-compiler /app/dist ./dist
 COPY --from=ts-compiler /app/views ./views
+COPY --from=ts-compiler /app/public ./public
 RUN mkdir -p logs
 RUN yarn install --production
 
