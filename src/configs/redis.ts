@@ -2,22 +2,36 @@ import { createClient } from "redis";
 
 import logger from "./logger";
 
-async function connectRedis() {
-  const client = createClient({
-    url: process.env.REDIS_URL,
-  });
+type RedisClientType = ReturnType<typeof createClient>;
 
-  client.on("error", (err) => {
-    logger.error(`Redis Error: ${err}`);
+export class Redis {
+  private static instance: RedisClientType;
 
-    // Stop process without app crash
-    process.exit(1);
-  });
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
 
-  client.on("connect", () => {
-    logger.info(`Redis connected`);
-  });
+  public static getInstance() {
+    return Redis.instance;
+  }
 
-  await client.connect();
+  public static async connect() {
+    const client = createClient({
+      url: process.env.REDIS_URL,
+    });
+
+    client.on("error", (err) => {
+      logger.error(`Redis Error: ${err}`);
+
+      // Stop process without app crash
+      process.exit(1);
+    });
+
+    client.on("connect", () => {
+      logger.info(`Redis connected`);
+    });
+
+    await client.connect();
+
+    Redis.instance = client;
+  }
 }
-connectRedis();

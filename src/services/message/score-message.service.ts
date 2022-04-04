@@ -1,6 +1,7 @@
 import { boundMethod } from "autobind-decorator";
 import { injectable } from "tsyringe";
 
+import { Redis } from "@configs/redis";
 import { SendAPIService } from "../facebook/send-api.service";
 import { UserService } from "../user/user.service";
 import { ScoreScraperService, ScoreSemester } from "../scraper/score-scraper.service";
@@ -12,7 +13,7 @@ export class ScoreMessageService {
     private readonly userService: UserService
   ) {}
 
-  private findTenHocKyFromNameTable(nameTable: string) {
+  private async findTenHocKyFromNameTable(nameTable: string) {
     /*
       "id":0,
       "TenHocKy":"Học kỳ 1/ 2021-2022",
@@ -20,9 +21,10 @@ export class ScoreMessageService {
       "TenHocKy_TA":"1st Semester/ 2021-2022"
     */
 
-    const semesterList = JSON.parse(process.env.SCORE_OPTIONS || "");
+    const semesterList = (await Redis.getInstance().get("score:semester-list")) ?? "";
+    const semesterListParsed = JSON.parse(semesterList);
 
-    const semesterFound = semesterList.find(
+    const semesterFound = semesterListParsed.find(
       (semester: ScoreSemester) => semester.NameTable === nameTable
     );
 
@@ -35,10 +37,15 @@ export class ScoreMessageService {
   }
 
   @boundMethod
-  public async handleByNameTable(nameTable: string = process.env.SEMESTER_SCORE!) {
+  public async handleByNameTable(_nameTable: string) {
     const { mssv, pass } = this.userService.getData();
 
-    const semesterName = this.findTenHocKyFromNameTable(nameTable);
+    let nameTable = _nameTable;
+    if (!_nameTable) {
+      nameTable = (await Redis.getInstance().get("semester:score")) ?? "";
+    }
+
+    const semesterName = await this.findTenHocKyFromNameTable(nameTable);
     if (!semesterName) {
       this.sendAPIService.call(`Bảng điểm không hợp lệ`);
       return;
@@ -182,12 +189,13 @@ export class ScoreMessageService {
 
   @boundMethod
   public async handleSemesterList() {
-    const semesterList = JSON.parse(process.env.SCORE_OPTIONS || "").reverse();
+    const semesterList = (await Redis.getInstance().get("score:semester-list")) ?? "";
+    const semesterListParsed = JSON.parse(semesterList).reverse();
 
     const elements = [];
     // Split semester list into chuck of 3 buttons
-    for (let i = 0; i < semesterList.length; i += 3) {
-      const options = semesterList.slice(i, i + 3);
+    for (let i = 0; i < semesterListParsed.length; i += 3) {
+      const options = semesterListParsed.slice(i, i + 3);
 
       const buttons = options.map((option: any) => ({
         type: "postback",

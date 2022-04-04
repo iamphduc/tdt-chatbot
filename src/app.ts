@@ -4,7 +4,7 @@ import path from "path";
 import morgan from "morgan";
 
 import "@configs/env";
-import "@configs/redis";
+import { Redis } from "@configs/redis";
 import logger, { stream } from "@configs/logger";
 import { route } from "./routes";
 
@@ -20,6 +20,9 @@ async function bootstrap() {
   // View Engine
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "../views"));
+
+  // Set up Redis
+  await Redis.connect();
 
   // Routes
   route(app);

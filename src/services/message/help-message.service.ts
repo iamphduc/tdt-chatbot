@@ -1,6 +1,7 @@
 import { boundMethod } from "autobind-decorator";
 import { injectable } from "tsyringe";
 
+import { Redis } from "@configs/redis";
 import { SendAPIService } from "../facebook/send-api.service";
 
 @injectable()
@@ -9,9 +10,11 @@ export class HelpMessageService {
 
   @boundMethod
   public async handleHelp() {
-    const scoreSemesterList = JSON.parse(process.env.SCORE_OPTIONS || "");
+    const semesterList = (await Redis.getInstance().get("score:semester-list")) ?? "";
+    const chosenScoreSemester = (await Redis.getInstance().get("semester:score")) ?? "";
 
-    const helpMessage = this.toMessage(scoreSemesterList);
+    const semesterListParsed = JSON.parse(semesterList);
+    const helpMessage = this.toMessage(semesterListParsed, chosenScoreSemester);
 
     const quickRepliesTitle = [
       "week",
@@ -21,7 +24,7 @@ export class HelpMessageService {
       "score",
       "score all",
       "score list",
-      `score -${process.env.SEMESTER_SCORE}`,
+      `score -${chosenScoreSemester}`,
     ];
 
     const quickReplies = quickRepliesTitle.map((title: string) => ({
@@ -33,7 +36,7 @@ export class HelpMessageService {
     await this.sendAPIService.callQuickReplies(helpMessage, quickReplies);
   }
 
-  private toMessage(scoreSemesterList: any[]) {
+  private toMessage(scoreSemesterList: any[], chosenScoreSemester: string) {
     /*
       "id":0,
       "TenHocKy":"Học kỳ 1/ 2021-2022",
@@ -59,7 +62,7 @@ export class HelpMessageService {
       `\n` +
       `Xem điểm:\n` +
       `  - HK mặc định: "score"\n` +
-      `     + Hiện tại sẽ là: -${process.env.SEMESTER_SCORE}\n` +
+      `     + Hiện tại sẽ là: -${chosenScoreSemester}\n` +
       `  - Tổng hợp: "score all"\n` +
       `\n` +
       `Xem điểm theo học kỳ:\n` +

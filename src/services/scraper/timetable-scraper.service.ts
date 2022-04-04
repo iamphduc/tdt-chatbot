@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 
+import { Redis } from "@configs/redis";
 import { TDTU_URL } from "@configs/url";
 import { SchoolScraperService } from "./school-scraper.service";
 import { extractTimetable, extractTimetableSemester } from "./timetable.cheerio";
@@ -41,20 +42,20 @@ export class TimetableScraperService extends SchoolScraperService {
 
   private async changeWeek(nextWeek = false) {
     const hiddenData: ASPNETVariable = await this.getASPNETVariable();
+    const timetableSemester = (await Redis.getInstance().get("semester:timetable")) ?? "";
 
-    let payload;
-    if (!nextWeek) {
-      // Similar to FormData
+    // Similar to FormData
+    let payload = new URLSearchParams({
+      ...hiddenData,
+      ThoiKhoaBieu1$cboHocKy: timetableSemester,
+      ThoiKhoaBieu1$radChonLua: "radXemTKBTheoTuan",
+      ThoiKhoaBieu1$btnTuanHienTai: "",
+    });
+
+    if (nextWeek) {
       payload = new URLSearchParams({
         ...hiddenData,
-        ThoiKhoaBieu1$cboHocKy: process.env.SEMESTER_SCHEDULE || "",
-        ThoiKhoaBieu1$radChonLua: "radXemTKBTheoTuan",
-        ThoiKhoaBieu1$btnTuanHienTai: "",
-      });
-    } else {
-      payload = new URLSearchParams({
-        ...hiddenData,
-        ThoiKhoaBieu1$cboHocKy: process.env.SEMESTER_SCHEDULE || "",
+        ThoiKhoaBieu1$cboHocKy: timetableSemester,
         ThoiKhoaBieu1$radChonLua: "radXemTKBTheoTuan",
         ThoiKhoaBieu1$btnTuanSau: "Tuần sau|Following week >>",
       });

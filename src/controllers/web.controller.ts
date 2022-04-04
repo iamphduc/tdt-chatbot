@@ -30,7 +30,6 @@ export class WebController {
   @boundMethod
   public async renderViewSetting(req: Request, res: Response) {
     const data = await this.settingService.getDataForViewSetting();
-    const chosenSemester = this.settingService.getChosenSemester();
 
     let scoreSemesterList: ScoreSemester[] = [];
     let timetableSemesterList: TimetableSemester[] = [];
@@ -43,12 +42,8 @@ export class WebController {
       defaultTimetableSemester = data.defaultTimetableSemester ?? "Missing value";
     }
 
-    let chosenScoreSemester = "";
-    let chosenTimetableSemester = "";
-    if (chosenSemester) {
-      chosenScoreSemester = chosenSemester.chosenScoreSemester ?? "";
-      chosenTimetableSemester = chosenSemester.chosenTimetableSemester ?? "";
-    }
+    const chosenScoreSemester = (await this.settingService.getScoreSemester()) ?? "";
+    const chosenTimetableSemester = (await this.settingService.getTimetableSemester()) ?? "";
 
     res.render("setting", {
       scoreSemesterList,
@@ -65,7 +60,8 @@ export class WebController {
   public async handleConfigSetting(req: Request, res: Response) {
     const { score, timetable } = req.body;
 
-    this.settingService.setChosenSemester(score, timetable);
+    await this.settingService.setScoreSemester(score);
+    await this.settingService.setTimetableSemester(timetable);
 
     res.status(200).json({
       status: "success",

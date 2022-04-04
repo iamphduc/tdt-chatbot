@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 
+import { Redis } from "@configs/redis";
 import { TDTU_URL } from "@configs/url";
 import { SchoolScraperService } from "./school-scraper.service";
 
@@ -11,21 +12,6 @@ export interface ScoreSemester {
 }
 
 export class ScoreScraperService extends SchoolScraperService {
-  private semesterDefault!: ScoreSemester;
-  private semesterList!: ScoreSemester[];
-
-  public getSemesterDefault(): ScoreSemester {
-    return this.semesterDefault;
-  }
-
-  public setSemesterDefault(semesterDefault: ScoreSemester) {
-    this.semesterDefault = semesterDefault;
-  }
-
-  public getSemesterList() {
-    return this.semesterList;
-  }
-
   // Get student data hidden in homepage for next scraper
   private async getStudentData() {
     const { data } = await this.client({
@@ -43,12 +29,17 @@ export class ScoreScraperService extends SchoolScraperService {
     return extracted;
   }
 
-  public async getBySemester(semester = process.env.SEMESTER_SCORE || "") {
+  public async getBySemester(_semester: string = "") {
     await super.login();
 
     const studentData = await this.getStudentData();
 
-    const { data: semesterScore } = await this.client({
+    let semester = _semester;
+    if (!_semester) {
+      semester = (await Redis.getInstance().get("semester:score")) ?? "";
+    }
+
+    const { data: score } = await this.client({
       method: "GET",
       url: TDTU_URL.score.LayKetQuaHocTap,
       params: {
@@ -70,9 +61,9 @@ export class ScoreScraperService extends SchoolScraperService {
       },
     });
 
-    semesterScore.push(GPA);
+    score.push(GPA);
 
-    return semesterScore;
+    return score;
   }
 
   public async getOverall() {
@@ -110,8 +101,7 @@ export class ScoreScraperService extends SchoolScraperService {
       },
     });
 
-    // Globalize for webhook score message
-    process.env.SCORE_OPTIONS = JSON.stringify(data);
+    await Redis.getInstance().set("score:semester-list", JSON.stringify(data));
 
     return data;
   }
