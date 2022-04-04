@@ -7,6 +7,8 @@ services:
       - 6379
     networks:
       - tdt-chatbot
+    volumes:
+      - redis-data:/data
 
   app:
     build: .
@@ -27,3 +29,7 @@ networks:
   tdt-chatbot:
     external:
       name: tdt-chatbot_network
+
+volumes:
+  redis-data:
+    driver: local
